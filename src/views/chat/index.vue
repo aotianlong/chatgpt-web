@@ -156,6 +156,7 @@ async function onConversation() {
     await fetchChatAPIOnce()
   }
   catch (error: any) {
+    console.log('error', error)
     const errorMessage = error?.message ?? t('common.wrong')
 
     if (error.message === 'canceled') {
