@@ -1,4 +1,4 @@
-import { useUserStore } from './store'
+import { useUserStore } from '../store'
 
 const userStore = useUserStore()
 /*
