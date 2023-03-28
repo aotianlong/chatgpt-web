@@ -2,14 +2,13 @@ import { useUserStore } from '../store'
 
 const userStore = useUserStore()
 /*
- * data: {
- * 		action: 'action',
- * 		data: {somedata: ''}
- *	}
- */
+* data: {
+*action: 'action',
+*data: {somedata: ''}
+*}
+*/
 window.addEventListener('message', (event) => {
-	const { data } = event
-	if (data.action === 'UpdateUser') {
-		userStore.updateUserInfo(data.data);
-	}
+  const { data } = event
+  if (data.action === 'UpdateUser')
+    userStore.updateUserInfo(data.data)
 })
