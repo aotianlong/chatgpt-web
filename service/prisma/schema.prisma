@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,3029 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model action_text_rich_texts {
+  id              BigInt                   @id @default(autoincrement())
+  name            String                   @db.VarChar
+  body            String?
+  record_type     String                   @db.VarChar
+  record_id       BigInt
+  created_at      DateTime                 @db.Timestamp(6)
+  updated_at      DateTime                 @db.Timestamp(6)
+  text_searchable Unsupported("tsvector")? @default(dbgenerated("to_tsvector('zhcfg'::regconfig, body)"))
+
+  @@unique([record_type, record_id, name], map: "idx_24595_index_action_text_rich_texts_uniqueness")
+  @@unique([record_type, record_id, name], map: "index_action_text_rich_texts_uniqueness")
+  @@index([text_searchable], map: "full_text_idx_for_rich_texts", type: Gin)
+}
+
+model active_storage_attachments {
+  id                   BigInt               @id @default(autoincrement())
+  name                 String               @db.VarChar(191)
+  record_type          String               @db.VarChar(191)
+  record_id            BigInt
+  blob_id              BigInt
+  created_at           DateTime             @db.Timestamptz(6)
+  primary              Boolean?             @default(false)
+  position             BigInt?              @default(1)
+  active_storage_blobs active_storage_blobs @relation(fields: [blob_id], references: [id], onUpdate: Restrict, map: "fk_rails_c3b3935057")
+
+  @@unique([record_type, record_id, name, blob_id], map: "idx_24602_index_active_storage_attachments_uniqueness")
+  @@index([blob_id], map: "idx_24602_index_active_storage_attachments_on_blob_id")
+}
+
+model active_storage_blobs {
+  id                             BigInt                           @id @default(autoincrement())
+  key                            String                           @unique(map: "idx_24609_index_active_storage_blobs_on_key") @db.VarChar(191)
+  filename                       String                           @db.VarChar(191)
+  content_type                   String?                          @db.VarChar(191)
+  metadata                       String?
+  byte_size                      BigInt
+  checksum                       String?                          @db.VarChar(191)
+  created_at                     DateTime                         @db.Timestamptz(6)
+  service_name                   String                           @db.VarChar(191)
+  active_storage_attachments     active_storage_attachments[]
+  active_storage_variant_records active_storage_variant_records[]
+}
+
+model active_storage_variant_records {
+  id                   BigInt               @id @default(autoincrement())
+  blob_id              BigInt
+  variation_digest     String               @db.VarChar(191)
+  active_storage_blobs active_storage_blobs @relation(fields: [blob_id], references: [id], onUpdate: Restrict, map: "fk_rails_993965df05")
+
+  @@unique([blob_id, variation_digest], map: "idx_24618_index_active_storage_variant_records_uniqueness")
+  @@unique([blob_id, variation_digest], map: "index_active_storage_variant_records_uniqueness")
+}
+
+model addresses {
+  id                BigInt   @id @default(autoincrement())
+  record_id         Int?
+  location_id       Int?
+  record_type       String?  @db.VarChar(32)
+  consignee         String?  @db.VarChar(32)
+  cell_phone_number String?  @db.VarChar(11)
+  zipcode           String?  @db.VarChar(6)
+  address           String?  @db.VarChar(32)
+  created_at        DateTime @db.Timestamp(6)
+  updated_at        DateTime @db.Timestamp(6)
+  purpose           String?  @db.VarChar(20)
+
+  @@index([cell_phone_number], map: "index_addresses_on_cell_phone_number")
+  @@index([record_type, record_id, purpose], map: "index_addresses_on_record_type_and_record_id_and_purpose")
+}
+
+model admin_groups {
+  id          BigInt   @id @default(autoincrement())
+  name        String?  @db.VarChar
+  users_count Int?     @default(0)
+  settings    Json?
+  created_at  DateTime @db.Timestamp(6)
+  updated_at  DateTime @db.Timestamp(6)
+}
+
+model albums {
+  id             BigInt    @id @default(autoincrement())
+  user_id        BigInt?
+  view_count     BigInt?   @default(0)
+  photos_count   BigInt?   @default(0)
+  comments_count BigInt?   @default(0)
+  name           String?   @db.VarChar(255)
+  created_at     DateTime? @db.Timestamptz(6)
+  updated_at     DateTime? @db.Timestamptz(6)
+  password       String?   @db.VarChar(30)
+  albumable_type String?   @db.VarChar(255)
+  albumable_id   BigInt?
+  permission     Int?      @default(0) @db.SmallInt
+  description    String?   @db.VarChar(255)
+  cover_id       BigInt?
+
+  @@index([albumable_type, albumable_id], map: "idx_24623_albumable")
+  @@index([user_id], map: "idx_24623_index_albums_on_user_id")
+  @@index([view_count], map: "idx_24623_index_albums_on_view_count")
+}
+
+model anchors {
+  id              BigInt    @id @default(autoincrement())
+  nickname        String?   @db.VarChar(191)
+  realname        String?   @db.VarChar(191)
+  birthday        DateTime? @db.Date
+  height          Float?
+  weight          Float?
+  description     String?
+  created_at      DateTime  @db.Timestamptz(6)
+  updated_at      DateTime  @db.Timestamptz(6)
+  favorites_count BigInt?   @default(0)
+  visits_count    BigInt?   @default(0)
+  comments_count  BigInt?   @default(0)
+}
+
+model app_notifications {
+  id         BigInt    @id @default(autoincrement())
+  app_id     BigInt?
+  name       String?   @db.VarChar(255)
+  params     String?
+  created_at DateTime? @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+}
+
+model app_users {
+  id         BigInt    @id @default(autoincrement())
+  user_id    BigInt?
+  app_id     BigInt?
+  created_at DateTime? @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+
+  @@index([user_id, app_id], map: "idx_24679_index_app_users_on_user_id_and_app_id")
+}
+
+model apps {
+  id             BigInt    @id @default(autoincrement())
+  name           String?   @db.VarChar(255)
+  logo_file_name String?   @db.VarChar(255)
+  url            String?   @db.VarChar(255)
+  api_url        String?   @db.VarChar(255)
+  key            String?   @db.VarChar(255)
+  description    String?   @db.VarChar(255)
+  secret         String?   @db.VarChar(255)
+  user_id        BigInt?
+  created_at     DateTime? @db.Timestamptz(6)
+  updated_at     DateTime? @db.Timestamptz(6)
+  internal       Boolean?  @default(false)
+  call_count     BigInt?   @default(0)
+  users_count    BigInt?   @default(0)
+  state          String?   @default("normal") @db.VarChar(20)
+  callback_url   String?   @db.VarChar(255)
+  sid            String?   @db.VarChar(30)
+  iframe         Boolean?  @default(false)
+
+  @@index([key, secret], map: "idx_24650_index_apps_on_key_and_secret")
+  @@index([user_id], map: "idx_24650_index_apps_on_user_id")
+  @@index([users_count], map: "idx_24650_index_apps_on_users_count")
+}
+
+model ar_internal_metadata {
+  key        String   @id @db.VarChar
+  value      String?  @db.VarChar
+  created_at DateTime @db.Timestamp(6)
+  updated_at DateTime @db.Timestamp(6)
+}
+
+model articles {
+  id                 BigInt                   @id @default(autoincrement())
+  title              String?                  @db.VarChar(255)
+  user_id            BigInt?
+  src                String?                  @db.VarChar(255)
+  src_url            String?                  @db.VarChar(255)
+  visits_count       BigInt?                  @default(0)
+  comments_count     BigInt?                  @default(0)
+  created_at         DateTime                 @db.Timestamptz(6)
+  updated_at         DateTime                 @db.Timestamptz(6)
+  state              BigInt?                  @default(0)
+  category_id        BigInt?
+  spider_id          String?                  @db.VarChar(255)
+  pictures_localized Boolean?                 @default(false)
+  attachments_count  BigInt?                  @default(0)
+  title_pinyin       String?                  @db.VarChar(255)
+  articlable_type    String?                  @db.VarChar(255)
+  articlable_id      BigInt?
+  redirect_url       String?                  @db.VarChar(191)
+  expires_at         DateTime?                @db.Timestamptz(6)
+  favorites_count    BigInt?                  @default(0)
+  ip                 String?                  @db.Inet
+  text_searchable    Unsupported("tsvector")? @default(dbgenerated("to_tsvector('zhcfg'::regconfig, (COALESCE(title, ''::character varying))::text)"))
+
+  @@index([text_searchable], map: "full_text_idx_for_articles", type: Gin)
+  @@index([articlable_type, articlable_id], map: "idx_24684_articlable")
+  @@index([category_id], map: "idx_24684_index_articles_on_category_id")
+  @@index([state], map: "idx_24684_index_articles_on_state")
+  @@index([title], map: "idx_24684_index_articles_on_title")
+  @@index([user_id], map: "idx_24684_index_articles_on_user_id")
+}
+
+model asset_proxies {
+  id          BigInt    @id @default(autoincrement())
+  url         String?
+  mime_type   String?   @db.VarChar(191)
+  user_id     BigInt?
+  hits        BigInt?
+  md5         String?   @db.VarChar(32)
+  size        BigInt?
+  last_hit_at DateTime? @db.Timestamptz(6)
+  created_at  DateTime  @db.Timestamptz(6)
+  updated_at  DateTime  @db.Timestamptz(6)
+
+  @@index([last_hit_at], map: "idx_24708_index_asset_proxies_on_last_hit_at")
+  @@index([md5], map: "idx_24708_index_asset_proxies_on_md5")
+}
+
+model auditions {
+  id             BigInt    @id @default(autoincrement())
+  auditable_id   BigInt?
+  auditable_type String?   @db.VarChar(191)
+  created_at     DateTime  @db.Timestamptz(6)
+  updated_at     DateTime  @db.Timestamptz(6)
+  state          BigInt?
+  reason         String?   @db.VarChar(191)
+  auditor_id     BigInt?
+  audited_at     DateTime? @db.Timestamptz(6)
+
+  @@index([auditable_id, auditable_type], map: "idx_24717_auditable")
+}
+
+model blacklists {
+  id         BigInt    @id @default(autoincrement())
+  user_id    BigInt?
+  bad_guy_id BigInt?
+  created_at DateTime? @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+
+  @@index([bad_guy_id], map: "idx_24724_index_blacklists_on_bad_guy_id")
+  @@index([user_id], map: "idx_24724_index_blacklists_on_user_id")
+}
+
+model blogs {
+  id                 BigInt                   @id @default(autoincrement())
+  title              String?                  @db.VarChar(255)
+  tags               String?                  @db.VarChar(255)
+  user_id            BigInt?
+  view_count         BigInt?                  @default(0)
+  content            String?
+  created_at         DateTime?                @db.Timestamptz(6)
+  updated_at         DateTime?                @db.Timestamptz(6)
+  comments_count     BigInt?                  @default(0)
+  category_id        BigInt?
+  permission         BigInt?                  @default(0)
+  cached_tag_list    String?                  @db.VarChar(255)
+  global_category_id BigInt?
+  state              BigInt?                  @default(0)
+  visitors_count     BigInt?                  @default(0)
+  format             BigInt?                  @default(0)
+  disable_comment    Boolean?                 @default(false)
+  favorites_count    BigInt?                  @default(0)
+  sid                String?                  @db.VarChar(48)
+  redirect_url       String?                  @db.VarChar(191)
+  ip                 String?                  @db.Inet
+  text_searchable    Unsupported("tsvector")? @default(dbgenerated("to_tsvector('zhcfg'::regconfig, (((title)::text || ' '::text) || content))"))
+
+  @@index([text_searchable], map: "full_text_idx_for_blogs", type: Gin)
+  @@index([sid], map: "idx_24729_index_blogs_on_sid")
+  @@index([user_id], map: "idx_24729_index_blogs_on_user_id")
+  @@index([view_count], map: "idx_24729_index_blogs_on_view_count")
+}
+
+model book_fields {
+  id                 BigInt    @id @default(autoincrement())
+  pages              BigInt?   @default(0)
+  price              BigInt?   @default(0)
+  publisher_name     String?   @db.VarChar(255)
+  publish_on         DateTime? @db.Date
+  isbn               String?   @db.VarChar(255)
+  binding            String?   @db.VarChar(255)
+  original_name      String?   @db.VarChar(255)
+  author             String?   @db.VarChar(255)
+  translator         String?   @db.VarChar(255)
+  catalog            String?
+  created_at         DateTime  @db.Timestamptz(6)
+  updated_at         DateTime  @db.Timestamptz(6)
+  collection_summary String?
+  author_summary     String?
+  collection_name    String?   @db.VarChar(255)
+  subtitle           String?   @db.VarChar(255)
+
+  @@index([isbn], map: "idx_24749_index_book_fields_on_isbn")
+}
+
+model brand_fields {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+}
+
+model cart_items {
+  id             BigInt   @id @default(autoincrement())
+  user_id        BigInt?
+  amount         BigInt?
+  shop_id        BigInt?
+  available      Boolean? @default(true)
+  created_at     DateTime @db.Timestamptz(6)
+  updated_at     DateTime @db.Timestamptz(6)
+  orderable_id   BigInt?
+  orderable_type String?  @db.VarChar(191)
+  is_selected    Boolean? @default(true)
+  sku_id         BigInt?
+  item_id        BigInt?
+  price          BigInt?
+  total_price    BigInt?
+  name           String?  @db.VarChar(191)
+
+  @@index([user_id], map: "idx_24771_index_cart_items_on_user_id")
+  @@index([orderable_id, orderable_type], map: "idx_24771_orderable")
+}
+
+model celebrity_fields {
+  id             BigInt    @id @default(autoincrement())
+  sex            Int?      @db.SmallInt
+  birthday       DateTime? @db.Date
+  zodiac         Int?      @db.SmallInt
+  chinese_zodiac Int?      @db.SmallInt
+  height         Int?
+  weight         Int?
+  english_name   String?   @db.VarChar(100)
+  bloodtype      Int?      @db.SmallInt
+  created_at     DateTime  @db.Timestamptz(6)
+  updated_at     DateTime  @db.Timestamptz(6)
+  alias_name     String?   @db.VarChar(255)
+  birthplace     String?   @db.VarChar(255)
+  graduated_from String?   @db.VarChar(255)
+  spouse         String?   @db.VarChar(255)
+  achievement    String?   @db.VarChar(255)
+  job            String?   @db.VarChar(255)
+  language       String?   @db.VarChar(255)
+  deathday       DateTime? @db.Timestamptz(6)
+  website        String?   @db.VarChar(255)
+  other_cn_names String?   @db.VarChar(255)
+  other_en_names String?   @db.VarChar(255)
+  imdb           String?   @db.VarChar(255)
+}
+
+model chat_messages {
+  id           BigInt   @id @default(autoincrement())
+  user_id      BigInt?
+  color        String?  @db.VarChar(7)
+  is_private   Boolean? @default(true)
+  receiver_id  BigInt?
+  to_all       Boolean? @default(false)
+  is_bulletin  Boolean? @default(false)
+  content      String?
+  created_at   DateTime @db.Timestamptz(6)
+  updated_at   DateTime @db.Timestamptz(6)
+  room_id      BigInt?
+  action       String?  @db.VarChar(255)
+  font_size    BigInt?  @default(13)
+  font_color   String?  @default("#000000") @db.VarChar(255)
+  room_user_id BigInt?
+
+  @@index([receiver_id], map: "idx_24799_index_chat_messages_on_receiver_id")
+  @@index([room_id], map: "idx_24799_index_chat_messages_on_room_id")
+  @@index([user_id], map: "idx_24799_index_chat_messages_on_user_id")
+}
+
+model chat_room_users {
+  id         BigInt   @id @default(autoincrement())
+  room_id    BigInt?
+  user_id    BigInt?
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+}
+
+model chat_rooms {
+  id                BigInt   @id @default(autoincrement())
+  name              String?  @db.VarChar(255)
+  user_id           BigInt?
+  subject           String?  @db.VarChar(255)
+  category_id       BigInt?
+  users_count       BigInt?  @default(0)
+  created_at        DateTime @db.Timestamptz(6)
+  updated_at        DateTime @db.Timestamptz(6)
+  description       String?  @db.VarChar(255)
+  picture           String?  @db.VarChar(255)
+  picture_file_name String?  @db.VarChar(255)
+  attachment_id     BigInt?
+
+  @@index([category_id], map: "idx_24813_index_chat_rooms_on_category_id")
+  @@index([user_id], map: "idx_24813_index_chat_rooms_on_user_id")
+}
+
+model check_ins {
+  id         BigInt    @id @default(autoincrement())
+  user_id    BigInt?
+  credits    BigInt?   @default(0)
+  created_at DateTime? @db.Timestamptz(6)
+
+  @@index([user_id], map: "idx_24831_index_check_ins_on_user_id")
+}
+
+model ckeditor_assets {
+  id                BigInt    @id @default(autoincrement())
+  data_file_name    String    @db.VarChar(255)
+  data_content_type String?   @db.VarChar(255)
+  data_file_size    BigInt?
+  assetable_id      BigInt?
+  assetable_type    String?   @db.VarChar(30)
+  type              String?   @db.VarChar(25)
+  guid              String?   @db.VarChar(10)
+  locale            Int?      @default(0) @db.SmallInt
+  user_id           BigInt?
+  created_at        DateTime? @db.Timestamptz(6)
+  updated_at        DateTime? @db.Timestamptz(6)
+
+  @@index([assetable_type, assetable_id], map: "idx_24837_fk_assetable")
+  @@index([user_id], map: "idx_24837_fk_user")
+  @@index([assetable_type, type, assetable_id], map: "idx_24837_idx_assetable_type")
+}
+
+model claims {
+  id             BigInt   @id @default(autoincrement())
+  claimable_id   BigInt?
+  claimable_type String?  @db.VarChar(191)
+  user_id        BigInt?
+  state          BigInt?
+  evidence       String?
+  created_at     DateTime @db.Timestamptz(6)
+  updated_at     DateTime @db.Timestamptz(6)
+  admin_id       BigInt?
+
+  @@index([claimable_id, claimable_type], map: "idx_24849_claimable")
+}
+
+model client_applications {
+  id                BigInt    @id @default(autoincrement())
+  name              String?   @db.VarChar(255)
+  url               String?   @db.VarChar(255)
+  support_url       String?   @db.VarChar(255)
+  callback_url      String?   @db.VarChar(255)
+  key               String?   @unique(map: "idx_24857_index_client_applications_on_key") @db.VarChar(40)
+  secret            String?   @db.VarChar(40)
+  user_id           BigInt?
+  created_at        DateTime? @db.Timestamptz(6)
+  updated_at        DateTime? @db.Timestamptz(6)
+  icon_file_name    String?   @db.VarChar(255)
+  icon_content_type String?   @db.VarChar(255)
+  icon_file_size    BigInt?
+  icon_updated_at   DateTime? @db.Timestamptz(6)
+}
+
+model comments {
+  id               BigInt    @id @default(autoincrement())
+  content          String?
+  commentable_type String?   @db.VarChar(32)
+  commentable_id   BigInt?
+  user_id          BigInt?
+  updated_at       DateTime? @db.Timestamptz(6)
+  created_at       DateTime? @db.Timestamptz(6)
+  favorites_count  BigInt?   @default(0)
+  reply_to_id      BigInt?
+  reply_to_user_id BigInt?
+  parent_id        BigInt?
+  replies_count    BigInt?   @default(0)
+  score            BigInt?   @default(0)
+  ip               String?   @db.Inet
+
+  @@index([commentable_id, commentable_type], map: "idx_24872_index_comments_on_commentable")
+  @@index([parent_id], map: "idx_24872_index_comments_on_parent_id")
+  @@index([user_id], map: "idx_24872_index_comments_on_user_id")
+}
+
+model communities {
+  id             BigInt   @id @default(autoincrement())
+  creator_id     BigInt?
+  users_count    BigInt?
+  name           String?  @db.VarChar(191)
+  address        String?  @db.VarChar(191)
+  photos_count   BigInt?
+  comments_count BigInt?
+  name2          String?  @db.VarChar(191)
+  created_at     DateTime @db.Timestamptz(6)
+  updated_at     DateTime @db.Timestamptz(6)
+}
+
+model companies {
+  id                  BigInt    @id @default(autoincrement())
+  name                String?   @db.VarChar(64)
+  tel                 String?   @db.VarChar(20)
+  tel2                String?   @db.VarChar(191)
+  state               Int?      @db.SmallInt
+  person              String?   @db.VarChar(10)
+  registered_capital  Float?
+  register_on         DateTime? @db.Timestamptz(6)
+  email               String?   @db.VarChar(64)
+  uscc                String?   @db.VarChar(32)
+  trn                 String?   @db.VarChar(32)
+  registration_number String?   @db.VarChar(32)
+  organization_code   String?   @db.VarChar(32)
+  employees_count     BigInt?   @default(0)
+  company_type        String?   @default("") @db.VarChar(64)
+  business            String?   @db.VarChar(32)
+  url                 String?   @db.VarChar(255)
+  address             String?   @db.VarChar(191)
+  business_scope      String?
+  created_at          DateTime  @db.Timestamptz(6)
+  updated_at          DateTime  @db.Timestamptz(6)
+
+  @@index([address], map: "idx_24894_index_companies_on_address")
+  @@index([name], map: "idx_24894_index_companies_on_name")
+  @@index([person], map: "idx_24894_index_companies_on_person")
+}
+
+model complaints {
+  id          BigInt   @id @default(autoincrement())
+  record_id   BigInt?
+  record_type String?  @db.VarChar(255)
+  url         String?  @db.VarChar(255)
+  user_id     BigInt?
+  summary     String?
+  status      Int?     @default(0) @db.SmallInt
+  admin_id    BigInt?
+  result      String?
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+  category_id BigInt?  @default(0)
+
+  @@index([record_id, record_type], map: "idx_24915_complaintable")
+  @@index([admin_id], map: "idx_24915_index_complaints_on_admin_id")
+  @@index([status], map: "idx_24915_index_complaints_on_status")
+  @@index([user_id], map: "idx_24915_index_complaints_on_user_id")
+}
+
+model consumer_tokens {
+  id         BigInt   @id @default(autoincrement())
+  user_id    BigInt?
+  type       String?  @db.VarChar(30)
+  token      String?  @unique(map: "idx_24926_index_consumer_tokens_on_token") @db.VarChar(255)
+  secret     String?  @db.VarChar(255)
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+}
+
+model coupons {
+  id                 BigInt    @id @default(autoincrement())
+  expires_at         DateTime? @db.Timestamptz(6)
+  discount           BigInt?
+  user_id            BigInt?
+  sn                 String?   @db.VarChar(191)
+  acquired_at        DateTime? @db.Timestamptz(6)
+  value              BigInt?
+  created_at         DateTime  @db.Timestamptz(6)
+  updated_at         DateTime  @db.Timestamptz(6)
+  factory_id         BigInt?
+  category_id        BigInt?
+  item_ids           String?
+  valid_days         BigInt?
+  release_begin_at   DateTime? @db.Timestamptz(6)
+  release_end_at     DateTime? @db.Timestamptz(6)
+  max_per_user       BigInt?   @default(1)
+  valid_begin_at     DateTime? @db.Timestamptz(6)
+  valid_end_at       DateTime? @db.Timestamptz(6)
+  valid_type         BigInt?   @default(0)
+  coupon_type        BigInt?
+  max_release_count  Int?      @default(0)
+  user_coupons_count Int?      @default(0)
+  name               String?   @db.VarChar(191)
+  over               BigInt?
+  description        String?   @db.VarChar(191)
+  category_ids       String?
+}
+
+model couriers {
+  id         BigInt   @id @default(autoincrement())
+  realname   String?  @db.VarChar(191)
+  telephone  String?  @db.VarChar(191)
+  telephone2 String?  @db.VarChar(191)
+  user_id    BigInt?
+  latitude   Float?
+  longitude  Float?
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  shop_id    BigInt?
+
+  @@index([user_id], map: "idx_24948_index_couriers_on_user_id")
+}
+
+model creation_logs {
+  id             BigInt   @id @default(autoincrement())
+  creatable_type String?  @db.VarChar(255)
+  creatable_id   BigInt?
+  url            String?
+  data           String?
+  created_at     DateTime @db.Timestamptz(6)
+  updated_at     DateTime @db.Timestamptz(6)
+  url_md5        String?  @db.VarChar(32)
+
+  @@index([creatable_id, creatable_type], map: "idx_24958_creatable")
+  @@index([url_md5], map: "idx_24958_index_creation_logs_on_url_md5")
+}
+
+model credit_histories {
+  id              BigInt    @id @default(autoincrement())
+  credits         BigInt?
+  user_id         BigInt?
+  credits_total   BigInt?
+  created_at      DateTime? @db.Timestamptz(6)
+  updated_at      DateTime? @db.Timestamptz(6)
+  credit_type     String?   @db.VarChar(255)
+  action          String?   @db.VarChar(255)
+  action_class    String?   @db.VarChar(255)
+  count           BigInt?   @default(0)
+  last_process_at DateTime? @db.Timestamptz(6)
+  today_count     BigInt?   @default(0)
+  credit_rule_id  BigInt?
+  start_at        DateTime? @db.Timestamptz(6)
+  cycle_count     BigInt?   @default(0)
+  total_count     BigInt?   @default(0)
+
+  @@index([created_at], map: "idx_24967_index_credit_histories_on_created_at")
+  @@index([credit_rule_id], map: "idx_24967_index_credit_histories_on_credit_rule_id")
+  @@index([user_id], map: "idx_24967_index_credit_histories_on_user_id")
+}
+
+model credit_logs {
+  id             BigInt    @id @default(autoincrement())
+  amount         BigInt?   @default(0)
+  note           String?   @db.VarChar(191)
+  credit_type    Int?      @default(0) @db.SmallInt
+  user_id        BigInt?
+  created_at     DateTime? @db.Timestamptz(6)
+  balance_before BigInt?   @default(0)
+  balance_after  BigInt?   @default(0)
+
+  @@index([created_at], map: "idx_24981_index_credit_logs_on_created_at")
+  @@index([user_id], map: "idx_24981_index_credit_logs_on_user_id")
+}
+
+model credit_rules {
+  id               BigInt    @id @default(autoincrement())
+  name             String?   @db.VarChar(50)
+  action           String?   @db.VarChar(255)
+  credits_number   BigInt?   @default(0)
+  experience       BigInt?   @default(0)
+  no_repeat        Int?      @default(0) @db.SmallInt
+  created_at       DateTime? @db.Timestamptz(6)
+  updated_at       DateTime? @db.Timestamptz(6)
+  credit_type      String?   @db.VarChar(255)
+  days_per_cycle   Int?
+  number_per_cycle BigInt?
+  credits          BigInt?   @default(0)
+}
+
+model deal_sources {
+  id          BigInt   @id @default(autoincrement())
+  name        String?  @db.VarChar(191)
+  url         String?  @db.VarChar(191)
+  deals_count BigInt?
+  union_id    String?  @db.VarChar(191)
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+}
+
+model deals {
+  id              BigInt                   @id @default(autoincrement())
+  price           BigInt?
+  original_price  BigInt?
+  user_id         BigInt?
+  name            String?                  @db.VarChar(191)
+  description     String?
+  created_at      DateTime                 @db.Timestamptz(6)
+  updated_at      DateTime                 @db.Timestamptz(6)
+  category_id     BigInt?
+  expires_at      DateTime?                @db.Timestamptz(6)
+  state           BigInt?
+  start_at        DateTime?                @db.Timestamptz(6)
+  end_at          DateTime?                @db.Timestamptz(6)
+  visits_count    BigInt?                  @default(0)
+  comments_count  BigInt?                  @default(0)
+  discount        Int?
+  source_id       BigInt?
+  excerpt         String?
+  sales_count     BigInt?                  @default(0)
+  expired         Boolean?                 @default(false)
+  ip              String?                  @db.Inet
+  text_searchable Unsupported("tsvector")? @default(dbgenerated("to_tsvector('zhcfg'::regconfig, (((COALESCE(name, ''::character varying))::text || ' '::text) || description))"))
+
+  @@index([text_searchable], map: "full_text_idx_for_deals", type: Gin)
+  @@index([category_id], map: "idx_25005_index_deals_on_category_id")
+  @@index([price], map: "idx_25005_index_deals_on_price")
+  @@index([user_id], map: "idx_25005_index_deals_on_user_id")
+  @@index([start_at, end_at], map: "idx_25005_timerange")
+}
+
+model decisions {
+  id         BigInt    @id @default(autoincrement())
+  user_id    BigInt?
+  status     Int?      @db.SmallInt
+  root_url   String?   @db.VarChar(255)
+  created_at DateTime? @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+
+  @@index([user_id], map: "idx_25028_index_decisions_on_user_id")
+}
+
+model delayed_jobs {
+  id         BigInt    @id @default(autoincrement())
+  priority   BigInt?   @default(0)
+  attempts   BigInt?   @default(0)
+  handler    String?
+  last_error String?
+  run_at     DateTime? @db.Timestamptz(6)
+  locked_at  DateTime? @db.Timestamptz(6)
+  failed_at  DateTime? @db.Timestamptz(6)
+  locked_by  String?   @db.VarChar(255)
+  queue      String?   @db.VarChar(255)
+  created_at DateTime  @db.Timestamptz(6)
+  updated_at DateTime  @db.Timestamptz(6)
+
+  @@index([priority, run_at], map: "idx_25034_delayed_jobs_priority")
+}
+
+model delivery_companies {
+  id          BigInt   @id @default(autoincrement())
+  name        String?  @db.VarChar(191)
+  tel         String?  @db.VarChar(191)
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+  name_pinyin String?  @db.VarChar(191)
+}
+
+model doings {
+  id          BigInt    @id @default(autoincrement())
+  status      String?   @db.VarChar(255)
+  user_id     BigInt?
+  reply_to_id BigInt?
+  created_at  DateTime? @db.Timestamptz(6)
+  updated_at  DateTime? @db.Timestamptz(6)
+}
+
+model drama_fields {
+  id              BigInt    @id @default(autoincrement())
+  imdb            String?   @db.VarChar(255)
+  website         String?   @db.VarChar(255)
+  language        String?   @db.VarChar(255)
+  alias_name      String?   @db.VarChar(255)
+  country_id      BigInt?
+  length          BigInt?
+  release_on      DateTime? @db.Date
+  created_at      DateTime  @db.Timestamptz(6)
+  updated_at      DateTime  @db.Timestamptz(6)
+  status          Int?      @db.SmallInt
+  station         String?   @db.VarChar(255)
+  season          Int?      @db.SmallInt
+  last_episode_id BigInt?
+}
+
+model emails {
+  id                BigInt    @id @default(autoincrement())
+  from              String?   @db.VarChar(255)
+  to                String?   @db.VarChar(255)
+  last_send_attempt BigInt?   @default(0)
+  mail              String?
+  created_on        DateTime? @db.Timestamptz(6)
+  priority          BigInt?
+}
+
+model episode_fields {
+  id         BigInt    @id @default(autoincrement())
+  title      String?   @db.VarChar(255)
+  created_at DateTime? @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+  season     BigInt?   @default(1)
+  episode    BigInt?   @default(1)
+}
+
+model extra_attributes {
+  id          BigInt    @id @default(autoincrement())
+  value       Json?
+  expires_at  DateTime? @db.Timestamp(6)
+  record_id   Int?
+  record_type String?   @db.VarChar
+  created_at  DateTime  @db.Timestamp(6)
+  updated_at  DateTime  @db.Timestamp(6)
+  name        String?   @default("") @db.VarChar
+  note        String?   @db.VarChar
+
+  @@index([expires_at], map: "index_extra_attributes_on_expires_at")
+  @@index([name], map: "index_extra_attributes_on_name")
+  @@index([record_id, record_type], map: "record")
+}
+
+model fans {
+  id          BigInt   @id @default(autoincrement())
+  record_id   Int?
+  record_type String?  @db.VarChar
+  user_id     Int?
+  created_at  DateTime @db.Timestamp(6)
+  updated_at  DateTime @db.Timestamp(6)
+
+  @@index([record_id, record_type], map: "index_fans_on_record_id_and_record_type")
+}
+
+model favorites {
+  id               BigInt   @id @default(autoincrement())
+  user_id          BigInt?
+  favoritable_id   BigInt?
+  favoritable_type String?  @db.VarChar(32)
+  remark           String?  @db.VarChar(191)
+  created_at       DateTime @db.Timestamptz(6)
+  updated_at       DateTime @db.Timestamptz(6)
+  title            String?  @db.VarChar(191)
+  url              String?
+
+  @@index([favoritable_id, favoritable_type], map: "idx_25104_favirotable")
+  @@index([user_id], map: "idx_25104_index_favorites_on_user_id")
+}
+
+model feeds {
+  id                BigInt    @id @default(autoincrement())
+  actor_id          BigInt?
+  app_id            BigInt?
+  created_at        DateTime? @db.Timestamptz(6)
+  updated_at        DateTime? @db.Timestamptz(6)
+  user_id           BigInt?
+  title_data        Json?     @default("{}")
+  body_data         Json?     @default("{}")
+  title_template_id Int?
+  body_template_id  Int?
+  feedable_id       Int?
+  feedable_type     String?   @db.VarChar
+
+  @@index([feedable_id, feedable_type], map: "feedable")
+  @@index([actor_id], map: "idx_25114_index_feeds_on_actor_id")
+  @@index([app_id], map: "idx_25114_index_feeds_on_app_id")
+  @@index([user_id], map: "idx_25114_index_feeds_on_user_id")
+  @@index([body_data], map: "index_feeds_on_body_data", type: Gin)
+  @@index([title_data], map: "index_feeds_on_title_data", type: Gin)
+}
+
+model form_field_records {
+  id             BigInt   @id @default(autoincrement())
+  form_id        BigInt?
+  form_field_id  BigInt?
+  user_id        BigInt?
+  value          String?
+  created_at     DateTime @db.Timestamptz(6)
+  updated_at     DateTime @db.Timestamptz(6)
+  form_record_id BigInt?
+
+  @@index([form_field_id], map: "idx_25155_index_form_field_records_on_form_field_id")
+  @@index([form_id], map: "idx_25155_index_form_field_records_on_form_id")
+  @@index([user_id], map: "idx_25155_index_form_field_records_on_user_id")
+}
+
+model form_fields {
+  id            BigInt   @id @default(autoincrement())
+  name          String?  @db.VarChar(191)
+  value_type    BigInt?
+  required      Boolean?
+  max_length    BigInt?
+  min_length    BigInt?
+  options       String?
+  form_id       BigInt?
+  created_at    DateTime @db.Timestamptz(6)
+  updated_at    DateTime @db.Timestamptz(6)
+  multiple      Boolean? @default(false)
+  description   String?  @default("") @db.VarChar(191)
+  default_value String?  @default("") @db.VarChar(191)
+  is_readonly   Boolean? @default(false)
+  max_select    BigInt?
+  key           String?  @db.VarChar(191)
+  position      BigInt?  @default(0)
+  placeholder   String?  @db.VarChar(191)
+  min_value     Float?
+  max_value     Float?
+  prefix        String?  @db.VarChar(191)
+  append        String?  @db.VarChar(191)
+  format        String?  @db.VarChar(191)
+
+  @@index([form_id], map: "idx_25137_index_form_fields_on_form_id")
+}
+
+model form_records {
+  id          BigInt   @id @default(autoincrement())
+  form_id     BigInt?
+  user_id     BigInt?
+  value       String?
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+  record_id   BigInt?
+  record_type String?  @db.VarChar(191)
+
+  @@index([form_id], map: "idx_25162_index_form_records_on_form_id")
+  @@index([user_id], map: "idx_25162_index_form_records_on_user_id")
+  @@index([record_id, record_type], map: "idx_25162_object")
+}
+
+model forms {
+  id            BigInt    @id @default(autoincrement())
+  name          String?   @db.VarChar(191)
+  user_id       BigInt?
+  fields_count  BigInt?
+  description   String?
+  created_at    DateTime  @db.Timestamptz(6)
+  updated_at    DateTime  @db.Timestamptz(6)
+  records_count BigInt?   @default(0)
+  valid_since   DateTime? @db.Timestamptz(6)
+  valid_until   DateTime? @db.Timestamptz(6)
+  max_per_user  BigInt?   @default(1)
+
+  @@index([user_id], map: "idx_25127_index_forms_on_user_id")
+}
+
+model freight_rules {
+  id                   BigInt   @id @default(autoincrement())
+  freight_template_id  BigInt?
+  fee                  BigInt?
+  amount               BigInt?  @default(1)
+  amount_per_step      BigInt?  @default(1)
+  fee_per_step         BigInt?
+  location_ids         String?
+  is_free_shipping     Boolean? @default(false)
+  free_shipping_amount BigInt?  @default(0)
+  free_shipping_unit   BigInt?
+  created_at           DateTime @db.Timestamptz(6)
+  updated_at           DateTime @db.Timestamptz(6)
+  default              Boolean? @default(false)
+  rule_type            Int?     @default(1) @db.SmallInt
+
+  @@index([freight_template_id], map: "idx_25170_index_freight_rules_on_freight_template_id")
+}
+
+model freight_templates {
+  id                      BigInt   @id @default(autoincrement())
+  name                    String?  @db.VarChar(191)
+  user_id                 BigInt?
+  created_at              DateTime @db.Timestamptz(6)
+  updated_at              DateTime @db.Timestamptz(6)
+  restricted_location_ids String?
+  step_by                 BigInt?  @default(0)
+  freight_type            BigInt?  @default(0)
+  shipping_location_id    BigInt?
+  fee                     BigInt?
+}
+
+model friend_groups {
+  id              BigInt   @id @default(autoincrement())
+  group_id        BigInt?
+  friend_group_id BigInt?
+  user_id         BigInt?
+  created_at      DateTime @db.Timestamptz(6)
+  updated_at      DateTime @db.Timestamptz(6)
+}
+
+model friendship_requests {
+  id           BigInt   @id @default(autoincrement())
+  user_id      BigInt?
+  requester_id BigInt?
+  note         String?  @db.VarChar(191)
+  action       String?  @db.VarChar(15)
+  created_at   DateTime @db.Timestamptz(6)
+  updated_at   DateTime @db.Timestamptz(6)
+}
+
+model friendships {
+  id                 BigInt    @id @default(autoincrement())
+  user_id            BigInt?
+  friend_id          BigInt?
+  created_at         DateTime? @db.Timestamptz(6)
+  updated_at         DateTime? @db.Timestamptz(6)
+  note               String?   @db.VarChar(255)
+  state              Int?      @default(0) @db.SmallInt
+  message_session_id BigInt?
+  session_id         BigInt?
+  request_id         BigInt?
+  remark             String?   @db.VarChar(191)
+
+  @@index([user_id, friend_id], map: "idx_25193_index_friendships_on_user_id_and_friend_id")
+}
+
+model geolocations {
+  id          BigInt   @id @default(autoincrement())
+  lat         Decimal? @db.Decimal(15, 10)
+  lng         Decimal? @db.Decimal(15, 10)
+  address     String?  @db.VarChar(191)
+  record_id   BigInt?
+  record_type String?  @db.VarChar(191)
+  location_id BigInt?
+  user_id     BigInt?
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+
+  @@index([record_id, record_type], map: "idx_25213_object")
+}
+
+model gift_cards {
+  id         BigInt    @id @default(autoincrement())
+  code       String?   @db.VarChar(191)
+  value      BigInt?
+  expires_at DateTime? @db.Timestamptz(6)
+  owner_id   BigInt?
+  created_at DateTime  @db.Timestamptz(6)
+  updated_at DateTime  @db.Timestamptz(6)
+}
+
+model gifts {
+  id           BigInt    @id @default(autoincrement())
+  user_id      BigInt?
+  acquired_at  DateTime? @db.Timestamptz(6)
+  encrypted_id String?   @db.VarChar(191)
+  prize        String?   @db.VarChar(191)
+  created_at   DateTime  @db.Timestamptz(6)
+  updated_at   DateTime  @db.Timestamptz(6)
+  item_id      BigInt?
+  operator_id  BigInt?
+}
+
+model goods {
+  id          BigInt   @id @default(autoincrement())
+  name        String?  @db.VarChar(255)
+  price       Float?
+  user_id     BigInt?
+  shop_id     BigInt?
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+  goods_no    String?  @db.VarChar(64)
+  description String?
+  extra       Json?    @default("{}")
+
+  @@index([name], map: "idx_25235_index_goods_on_name")
+  @@index([price], map: "idx_25235_index_goods_on_price")
+  @@index([shop_id], map: "idx_25235_index_goods_on_shop_id")
+  @@index([user_id], map: "idx_25235_index_goods_on_user_id")
+}
+
+model group_messages {
+  id         BigInt   @id @default(autoincrement())
+  content    String?  @db.VarChar(191)
+  group_id   BigInt?
+  user_id    BigInt?
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+}
+
+model group_posts {
+  id                BigInt                   @id @default(autoincrement())
+  group_id          BigInt?
+  topic_id          BigInt?
+  user_id           BigInt?
+  body              String?
+  created_at        DateTime?                @db.Timestamptz(6)
+  updated_at        DateTime?                @db.Timestamptz(6)
+  first             Boolean?                 @default(false)
+  likes_count       BigInt?                  @default(0)
+  reply_to_id       BigInt?
+  floor             BigInt?                  @default(1)
+  attachments_count BigInt?                  @default(0)
+  text_searchable   Unsupported("tsvector")? @default(dbgenerated("to_tsvector('zhcfg'::regconfig, COALESCE(body, ''::text))"))
+
+  @@index([text_searchable], map: "full_text_idx_for_group_posts", type: Gin)
+  @@index([group_id, topic_id], map: "idx_25269_index_group_posts_on_group_id_and_topic_id")
+  @@index([user_id], map: "idx_25269_index_group_posts_on_user_id")
+}
+
+model group_topic_extras {
+  id         BigInt   @id @default(autoincrement())
+  name       String?  @db.VarChar(191)
+  topic_id   BigInt?
+  admin_id   BigInt?
+  note       String?  @db.VarChar(191)
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+}
+
+model group_topic_users {
+  id             BigInt   @id @default(autoincrement())
+  group_topic_id BigInt?
+  user_id        BigInt?
+  posts_count    BigInt?  @default(0)
+  created_at     DateTime @db.Timestamptz(6)
+  updated_at     DateTime @db.Timestamptz(6)
+
+  @@index([group_topic_id], map: "idx_25299_index_group_topic_users_on_group_topic_id")
+  @@index([user_id], map: "idx_25299_index_group_topic_users_on_user_id")
+}
+
+model group_topics {
+  id                  BigInt                   @id @default(autoincrement())
+  subject             String?                  @db.VarChar(255)
+  user_id             BigInt?
+  group_id            BigInt?
+  posts_count         BigInt?                  @default(0)
+  created_at          DateTime?                @db.Timestamptz(6)
+  updated_at          DateTime?                @db.Timestamptz(6)
+  visits_count        BigInt?                  @default(0)
+  last_post_id        BigInt?
+  participators_count BigInt?                  @default(0)
+  last_replied_at     DateTime?                @db.Timestamptz(6)
+  favorites_count     BigInt?                  @default(0)
+  next_floor          BigInt?                  @default(1)
+  attachments_count   BigInt?                  @default(0)
+  text_searchable     Unsupported("tsvector")? @default(dbgenerated("to_tsvector('zhcfg'::regconfig, (COALESCE(subject, ''::character varying))::text)"))
+
+  @@index([text_searchable], map: "full_text_idx_for_group_topics", type: Gin)
+}
+
+model group_users {
+  id           BigInt    @id @default(autoincrement())
+  user_id      BigInt?
+  group_id     BigInt?
+  level        BigInt?   @default(1)
+  created_at   DateTime? @db.Timestamptz(6)
+  updated_at   DateTime? @db.Timestamptz(6)
+  state        BigInt?   @default(0)
+  approved_at  DateTime? @db.Timestamptz(6)
+  reason       String?   @db.VarChar(255)
+  topics_count BigInt?   @default(0)
+  posts_count  BigInt?   @default(0)
+  inviter_id   BigInt?
+
+  @@index([group_id], map: "idx_25305_index_group_users_on_group_id")
+}
+
+model groups {
+  id                  BigInt                   @id @default(autoincrement())
+  admin_id            BigInt?
+  users_count         BigInt?                  @default(0)
+  name                String?                  @db.VarChar(255)
+  tags                String?                  @db.VarChar(255)
+  created_at          DateTime?                @db.Timestamptz(6)
+  updated_at          DateTime?                @db.Timestamptz(6)
+  description         String?                  @db.VarChar(255)
+  avatar_file_name    String?                  @db.VarChar(255)
+  topics_count        BigInt?                  @default(0)
+  posts_count         BigInt?                  @default(0)
+  creator_id          BigInt?
+  permission          BigInt?                  @default(0)
+  approved_at         DateTime?                @db.Timestamptz(6)
+  normal_users_count  BigInt?                  @default(0)
+  pending_users_count BigInt?                  @default(0)
+  category_id         BigInt?
+  discussable_id      BigInt?
+  discussable_type    String?                  @db.VarChar(255)
+  attachment_id       BigInt?
+  last_post_id        BigInt?
+  last_topic_id       BigInt?
+  today_topics_count  BigInt?                  @default(0)
+  today_posts_count   BigInt?                  @default(0)
+  likes_count         BigInt?                  @default(0)
+  member_title        String?                  @db.VarChar(32)
+  text_searchable     Unsupported("tsvector")? @default(dbgenerated("to_tsvector('zhcfg'::regconfig, (((name)::text || ' '::text) || (description)::text))"))
+
+  @@index([text_searchable], map: "full_text_idx_for_groups", type: Gin)
+  @@index([discussable_id, discussable_type], map: "idx_25241_discussable")
+  @@index([users_count], map: "idx_25241_index_groups_on_users_count")
+}
+
+model health_data {
+  id          BigInt    @id @default(autoincrement())
+  user_id     BigInt?
+  value       Float?
+  description String?   @db.VarChar(255)
+  type        String?   @db.VarChar(255)
+  created_at  DateTime  @db.Timestamptz(6)
+  updated_at  DateTime  @db.Timestamptz(6)
+  measured_at DateTime? @db.Timestamptz(6)
+}
+
+model histories {
+  id         BigInt    @id @default(autoincrement())
+  user_id    BigInt?
+  content    String?
+  created_at DateTime? @db.Timestamptz(6)
+  trust_root String?   @db.VarChar(255)
+
+  @@index([user_id], map: "idx_25324_index_histories_on_user_id")
+}
+
+model identities {
+  id         BigInt   @id @default(autoincrement())
+  user_id    BigInt?
+  provider   String?  @db.VarChar(255)
+  uid        String?  @db.VarChar(255)
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  info       String?
+  token      String?  @db.VarChar(255)
+  secret     String?  @db.VarChar(255)
+
+  @@index([user_id], map: "idx_25332_index_identities_on_user_id")
+}
+
+model invites {
+  id           BigInt    @id @default(autoincrement())
+  inviter_id   BigInt?
+  invitee_id   BigInt?
+  email        String?   @db.VarChar(255)
+  state        BigInt?   @default(0)
+  email_sent   Boolean?
+  invitee_name String?   @db.VarChar(255)
+  created_at   DateTime? @db.Timestamptz(6)
+  updated_at   DateTime? @db.Timestamptz(6)
+}
+
+model item_attr_values {
+  id         BigInt   @id @default(autoincrement())
+  value      String?  @db.VarChar
+  attr_id    Int?
+  created_at DateTime @db.Timestamp(6)
+  updated_at DateTime @db.Timestamp(6)
+  tmpid      String?  @db.VarChar
+  name       String?  @db.VarChar(20)
+
+  @@index([attr_id], map: "index_item_attr_values_on_attr_id")
+}
+
+model item_attrs {
+  id                BigInt   @id @default(autoincrement())
+  name              String?  @db.VarChar(20)
+  is_image_required Boolean? @default(false)
+  index             Int?     @default(0) @db.SmallInt
+  item_id           Int?
+  shop_id           Int?
+  created_at        DateTime @db.Timestamp(6)
+  updated_at        DateTime @db.Timestamp(6)
+
+  @@index([item_id], map: "index_item_attrs_on_item_id")
+}
+
+model item_params {
+  id         BigInt   @id @default(autoincrement())
+  group      String?  @db.VarChar(191)
+  name       String?  @db.VarChar(191)
+  value      String?  @db.VarChar(191)
+  item_id    BigInt?
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+
+  @@index([item_id], map: "idx_25370_index_item_params_on_item_id")
+}
+
+model item_skus {
+  id              BigInt   @id @default(autoincrement())
+  price           BigInt?
+  remark          String?  @db.VarChar(191)
+  stock_quantity  BigInt?
+  codebar         String?  @db.VarChar(191)
+  created_at      DateTime @db.Timestamptz(6)
+  updated_at      DateTime @db.Timestamptz(6)
+  item_id         BigInt?
+  sold_count      BigInt?  @default(0)
+  favorites_count BigInt?  @default(0)
+  weight          BigInt?
+  attr_value_ids  Int[]    @default([])
+}
+
+model items {
+  id                  BigInt   @id @default(autoincrement())
+  name                String?  @db.VarChar(191)
+  amount              BigInt?
+  created_at          DateTime @db.Timestamptz(6)
+  updated_at          DateTime @db.Timestamptz(6)
+  user_id             BigInt?
+  category_id         BigInt?
+  state               BigInt?
+  shop_id             BigInt?
+  item_number         String?  @db.VarChar(32)
+  sid                 String?  @db.VarChar(32)
+  stock_quantity      BigInt?  @default(0)
+  sold_count          BigInt?  @default(0)
+  favorites_count     BigInt?  @default(0)
+  logistic_required   Boolean? @default(true)
+  original_price      BigInt?
+  visits_count        BigInt?  @default(0)
+  promise_send_time   BigInt?
+  delivery_in_hours   BigInt?
+  freight_template_id BigInt?
+  model_id            BigInt?
+  model_record_id     BigInt?
+  price               BigInt?
+  weight              BigInt?
+  month_sold_count    BigInt?  @default(0)
+  is_for_sale         Boolean? @default(true)
+  score               Float?
+  reviews_count       BigInt?  @default(0)
+  params              Json?    @default("{}")
+
+  @@index([shop_id], map: "idx_25353_index_items_on_shop_id")
+  @@index([sid], map: "idx_25353_index_items_on_sid")
+  @@index([state], map: "idx_25353_index_items_on_state")
+  @@index([params], map: "index_items_on_params", type: Gin)
+}
+
+model likes {
+  id           BigInt   @id @default(autoincrement())
+  likable_id   BigInt?
+  likable_type String?  @db.VarChar(255)
+  users_count  BigInt?
+  created_at   DateTime @db.Timestamptz(6)
+  updated_at   DateTime @db.Timestamptz(6)
+  user_id      BigInt?
+
+  @@index([user_id], map: "idx_25394_index_likes_on_user_id")
+  @@index([users_count], map: "idx_25394_index_likes_on_users_count")
+  @@index([likable_id, likable_type], map: "idx_25394_likeable")
+}
+
+model linkings {
+  id            BigInt   @id @default(autoincrement())
+  linkable_id   BigInt?
+  linkable_type String?  @db.VarChar(191)
+  link_id       BigInt?
+  user_id       BigInt?
+  visits_count  BigInt?  @default(0)
+  created_at    DateTime @db.Timestamptz(6)
+  updated_at    DateTime @db.Timestamptz(6)
+
+  @@index([link_id], map: "idx_25400_index_linkings_on_link_id")
+  @@index([user_id], map: "idx_25400_index_linkings_on_user_id")
+  @@index([linkable_id, linkable_type], map: "idx_25400_linkable")
+}
+
+model links {
+  id            BigInt   @id @default(autoincrement())
+  linkable_id   BigInt?
+  linkable_type String?  @db.VarChar(255)
+  type          String?  @db.VarChar(255)
+  url           String?
+  view_count    BigInt?  @default(0)
+  user_id       BigInt?
+  created_at    DateTime @db.Timestamptz(6)
+  updated_at    DateTime @db.Timestamptz(6)
+  password      String?  @db.VarChar
+  size          Int?
+  fingerprint   String?  @db.VarChar
+  group_name    String?  @db.VarChar
+  name          String?  @db.VarChar
+  short_url     String?  @db.VarChar(32)
+  linkable_name String?  @db.VarChar(20)
+  extra         Json?    @default("{}") @db.Json
+
+  @@index([linkable_type, linkable_id], map: "idx_25407_linkable")
+  @@index([short_url], map: "index_links_on_short_url")
+}
+
+model list_items {
+  id            BigInt   @id @default(autoincrement())
+  title         String?  @db.VarChar(191)
+  listable_id   BigInt?
+  listable_type String?  @db.VarChar(191)
+  user_id       BigInt?
+  reason        String?
+  position      BigInt?  @default(0)
+  created_at    DateTime @db.Timestamptz(6)
+  updated_at    DateTime @db.Timestamptz(6)
+  list_id       Int?
+
+  @@index([user_id], map: "idx_25426_index_list_items_on_user_id")
+  @@index([listable_id, listable_type], map: "idx_25426_listable")
+  @@index([list_id], map: "index_list_items_on_list_id")
+}
+
+model lists {
+  id            BigInt   @id @default(autoincrement())
+  name          String?  @db.VarChar(191)
+  user_id       BigInt?
+  items_count   BigInt?  @default(0)
+  description   String?
+  created_at    DateTime @db.Timestamptz(6)
+  updated_at    DateTime @db.Timestamptz(6)
+  listable_type String?  @db.VarChar(32)
+}
+
+model live_streams {
+  id               BigInt   @id @default(autoincrement())
+  platform_id      BigInt?
+  anchor_id        BigInt?
+  created_at       DateTime @db.Timestamptz(6)
+  updated_at       DateTime @db.Timestamptz(6)
+  title            String?  @db.VarChar(191)
+  category_id      BigInt?
+  hot              BigInt?  @default(0)
+  comments_count   BigInt?  @default(0)
+  subscribes_count Int?     @default(0)
+  streaming        Boolean? @default(false)
+
+  @@index([anchor_id], map: "idx_25436_index_live_streams_on_anchor_id")
+  @@index([category_id], map: "idx_25436_index_live_streams_on_category_id")
+}
+
+model locations {
+  id                BigInt    @id @default(autoincrement())
+  name              String?   @db.VarChar(255)
+  ancestry          String?   @db.VarChar(255)
+  ancestry_depth    BigInt?
+  position          BigInt?
+  created_at        DateTime? @db.Timestamptz(6)
+  updated_at        DateTime? @db.Timestamptz(6)
+  users_count       BigInt?   @default(0)
+  picture_file_name String?   @db.VarChar(255)
+  group_id          BigInt?
+  pinyin            String?   @db.VarChar(255)
+  description       String?   @db.VarChar(255)
+  lat               Float?
+  lng               Float?
+  google_place_id   String?   @db.VarChar(255)
+  formatted_name    String?   @db.VarChar(255)
+  postal_code       String?   @db.VarChar(255)
+  sid               String?   @db.VarChar(32)
+  children_count    BigInt?   @default(0)
+
+  @@index([sid], map: "idx_25448_index_locations_on_sid")
+}
+
+model login_logs {
+  id         BigInt    @id @default(autoincrement())
+  username   String?   @db.VarChar(255)
+  email      String?   @db.VarChar(255)
+  success    Boolean?  @default(true)
+  ip         String?   @db.VarChar(15)
+  password   String?   @db.VarChar(255)
+  user_id    BigInt?
+  created_at DateTime? @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+  login_from String?   @db.VarChar(255)
+
+  @@index([user_id], map: "idx_25466_index_login_logs_on_user_id")
+}
+
+model logistics {
+  id                   BigInt    @id @default(autoincrement())
+  express_no           String?   @db.VarChar(191)
+  consignee_realname   String?   @db.VarChar(191)
+  consignee_telephone  String?   @db.VarChar(191)
+  consignee_telephone2 String?   @db.VarChar(191)
+  consignee_address    String?   @db.VarChar(191)
+  consignee_zip        String?   @db.VarChar(191)
+  logistic_type        BigInt?
+  logistics_id         String?   @db.VarChar(191)
+  fee                  BigInt?
+  agency_fee           BigInt?
+  delivery_amount      BigInt?
+  state                BigInt?
+  settlement_state     BigInt?
+  last_result          String?   @db.VarChar(191)
+  result               String?   @db.VarChar(191)
+  settle_at            DateTime? @db.Timestamptz(6)
+  reconciliation_state BigInt?
+  reconciliate_at      DateTime? @db.Timestamptz(6)
+  created_at           DateTime  @db.Timestamptz(6)
+  updated_at           DateTime  @db.Timestamptz(6)
+  logisticable_id      BigInt?
+  logisticable_type    String?   @db.VarChar(32)
+  user_id              BigInt?
+  public_uid           String?   @db.VarChar(12)
+  courier_id           BigInt?
+  user_address_id      BigInt?
+  order_id             BigInt?
+  location_id          BigInt?
+
+  @@index([courier_id], map: "idx_25479_index_logistics_on_courier_id")
+  @@index([public_uid], map: "idx_25479_index_logistics_on_public_uid")
+  @@index([logisticable_id, logisticable_type], map: "idx_25479_logisticable")
+}
+
+model logs {
+  id            BigInt   @id @default(autoincrement())
+  loggable_id   BigInt?
+  loggable_type String?  @db.VarChar(191)
+  user_id       BigInt?
+  data          Json?    @default("{}")
+  key           String?  @db.VarChar(191)
+  message       String?  @db.VarChar(191)
+  action        String?  @db.VarChar(191)
+  created_at    DateTime @db.Timestamptz(6)
+  updated_at    DateTime @db.Timestamptz(6)
+  level         Int?     @db.SmallInt
+
+  @@index([action], map: "idx_25497_index_logs_on_action")
+  @@index([key], map: "idx_25497_index_logs_on_key")
+  @@index([level], map: "idx_25497_index_logs_on_level")
+  @@index([user_id], map: "idx_25497_index_logs_on_user_id")
+  @@index([loggable_id, loggable_type], map: "idx_25497_loggable")
+  @@index([data], map: "index_logs_on_data", type: Gin)
+}
+
+model lottery_commodities {
+  id         BigInt   @id @default(autoincrement())
+  item_id    BigInt?
+  period_id  BigInt?
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  user_id    BigInt?
+  title      String?  @db.VarChar(191)
+  grade      BigInt?  @default(3)
+}
+
+model lottery_periods {
+  id             BigInt    @id @default(autoincrement())
+  number         BigInt?
+  description    String?
+  start_at       DateTime? @db.Timestamptz(6)
+  end_at         DateTime? @db.Timestamptz(6)
+  state          BigInt?
+  created_at     DateTime  @db.Timestamptz(6)
+  updated_at     DateTime  @db.Timestamptz(6)
+  user_id        BigInt?
+  title          String?   @db.VarChar(191)
+  winning_number String?   @db.VarChar(191)
+}
+
+model lottery_results {
+  id         BigInt   @id @default(autoincrement())
+  code       String?  @db.VarChar(191)
+  period_id  BigInt?
+  user_id    BigInt?
+  state      BigInt?
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+
+  @@index([user_id], map: "idx_25524_index_lottery_results_on_user_id")
+}
+
+model lottery_users {
+  id            BigInt   @id @default(autoincrement())
+  state         BigInt?
+  user_id       BigInt?
+  period_id     BigInt?
+  commodity_id  BigInt?
+  created_at    DateTime @db.Timestamptz(6)
+  updated_at    DateTime @db.Timestamptz(6)
+  number        String?  @db.VarChar(191)
+  winning_grade Int?     @default(0) @db.SmallInt
+  source        String?  @db.VarChar(32)
+
+  @@index([period_id], map: "idx_25530_index_lottery_users_on_period_id")
+  @@index([user_id], map: "idx_25530_index_lottery_users_on_user_id")
+}
+
+model manufacturer_fields {
+  id         BigInt   @id @default(autoincrement())
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+}
+
+model mentions {
+  id                BigInt   @id @default(autoincrement())
+  user_id           BigInt?
+  mentioned_user_id BigInt?
+  times             BigInt?  @default(0)
+  created_at        DateTime @db.Timestamptz(6)
+  updated_at        DateTime @db.Timestamptz(6)
+  mentionable_type  String?  @db.VarChar(255)
+  mentionable_id    BigInt?
+
+  @@index([mentioned_user_id], map: "idx_25543_index_mentions_on_mentioned_user_id")
+  @@index([user_id], map: "idx_25543_index_mentions_on_user_id")
+  @@index([mentionable_type, mentionable_id], map: "idx_25543_mentionable")
+}
+
+model merchants {
+  id             BigInt   @id @default(autoincrement())
+  name           String?  @db.VarChar(255)
+  address        String?  @db.VarChar(255)
+  phone          String?  @db.VarChar(255)
+  mobile         String?  @db.VarChar(255)
+  lat            Float?
+  lng            Float?
+  contacter      String?  @db.VarChar(255)
+  owner_id       BigInt?
+  creator_id     BigInt?
+  products_count BigInt?  @default(0)
+  created_at     DateTime @db.Timestamptz(6)
+  updated_at     DateTime @db.Timestamptz(6)
+  location_id    BigInt?
+  slogon         String?  @db.VarChar(191)
+
+  @@index([creator_id], map: "idx_25550_index_merchants_on_creator_id")
+  @@index([location_id], map: "idx_25550_index_merchants_on_location_id")
+  @@index([name], map: "idx_25550_index_merchants_on_name")
+  @@index([owner_id], map: "idx_25550_index_merchants_on_owner_id")
+}
+
+model message_groups {
+  id            BigInt   @id @default(autoincrement())
+  members_count BigInt?
+  name          String?  @db.VarChar(255)
+  bulletin      String?  @db.VarChar(255)
+  description   String?  @db.VarChar(255)
+  admin_id      BigInt?
+  created_at    DateTime @db.Timestamptz(6)
+  updated_at    DateTime @db.Timestamptz(6)
+
+  @@index([admin_id], map: "idx_25576_index_message_groups_on_admin_id")
+}
+
+model message_session_users {
+  id                    BigInt    @id @default(autoincrement())
+  user_id               BigInt?
+  session_id            BigInt?
+  online                Boolean?
+  unread_messages_count BigInt?
+  created_at            DateTime  @db.Timestamptz(6)
+  updated_at            DateTime  @db.Timestamptz(6)
+  last_read_at          DateTime? @db.Timestamptz(6)
+
+  @@index([session_id], map: "idx_25595_index_message_session_users_on_session_id")
+  @@index([user_id], map: "idx_25595_index_message_session_users_on_user_id")
+}
+
+model message_sessions {
+  id                 BigInt   @id @default(autoincrement())
+  messages_count     BigInt?
+  created_at         DateTime @db.Timestamptz(6)
+  updated_at         DateTime @db.Timestamptz(6)
+  title              String?  @db.VarChar(191)
+  users_count        BigInt?  @default(0)
+  multiple           Boolean? @default(false)
+  private_session_id String?  @db.VarChar(32)
+
+  @@index([private_session_id], map: "idx_25586_index_message_sessions_on_private_session_id")
+}
+
+model messages {
+  id                    BigInt    @id @default(autoincrement())
+  user_id               BigInt?
+  body                  String?   @db.VarChar(255)
+  created_at            DateTime? @db.Timestamptz(6)
+  updated_at            DateTime? @db.Timestamptz(6)
+  sys                   Boolean?  @default(false)
+  session_id            Int?
+  recipient_type        String?   @db.VarChar(255)
+  already_read_user_ids Int[]     @default([])
+
+  @@index([session_id], map: "idx_25564_index_messages_on_session_id")
+  @@index([user_id], map: "idx_25564_index_messages_on_user_id")
+  @@index([already_read_user_ids], map: "index_messages_on_already_read_user_ids", type: Gin)
+  @@index([created_at], map: "index_messages_on_created_at")
+}
+
+model mg_conversations {
+  id         BigInt    @id @default(autoincrement())
+  subject    String?   @db.VarChar(100)
+  user_id    BigInt?
+  is_end     String?   @default("0") @db.VarChar(1)
+  created_at DateTime? @db.Timestamp(6)
+  updated_at DateTime? @db.Timestamp(6)
+
+  @@index([user_id], map: "mg_conversations_user_id_index")
+}
+
+model mg_messages {
+  id                BigInt    @id @default(autoincrement())
+  message_id        String?   @db.VarChar(100)
+  text              String?   @db.VarChar(100)
+  role              String?   @db.VarChar(1)
+  parent_message_id String?   @db.VarChar(100)
+  conversation_id   Int?
+  created_at        DateTime? @db.Timestamp(6)
+  updated_at        DateTime? @db.Timestamp(6)
+
+  @@index([conversation_id], map: "mg_messages_conversation_id_index")
+  @@index([message_id], map: "mg_messages_message_id_index")
+}
+
+model mg_users {
+  id         BigInt    @id @default(autoincrement())
+  user_id    Int?
+  created_at DateTime? @db.Timestamp(6)
+  updated_at DateTime? @db.Timestamp(6)
+  expires_at DateTime? @db.Timestamp(6)
+
+  @@index([user_id], map: "mg_users_user_id_index")
+}
+
+model model_field_records {
+  id              BigInt   @id @default(autoincrement())
+  model_id        BigInt?
+  model_field_id  BigInt?
+  user_id         BigInt?
+  value           String?
+  model_record_id BigInt?
+  created_at      DateTime @db.Timestamptz(6)
+  updated_at      DateTime @db.Timestamptz(6)
+
+  @@index([model_field_id], map: "idx_25628_index_model_field_records_on_model_field_id")
+  @@index([model_id], map: "idx_25628_index_model_field_records_on_model_id")
+  @@index([user_id], map: "idx_25628_index_model_field_records_on_user_id")
+}
+
+model model_fields {
+  id          BigInt   @id @default(autoincrement())
+  name        String?  @db.VarChar(191)
+  type        BigInt?
+  required    Boolean?
+  max_length  BigInt?
+  min_length  BigInt?
+  model_id    BigInt?
+  multiple    Boolean? @default(false)
+  description String?  @default("") @db.VarChar(191)
+  is_readonly Boolean? @default(false)
+  max_select  BigInt?
+  key         String?  @db.VarChar(191)
+  position    BigInt?  @default(0)
+  placeholder String?  @db.VarChar(191)
+  min_value   Float?
+  max_value   Float?
+  prefix      String?  @db.VarChar(191)
+  append      String?  @db.VarChar(191)
+  format      String?  @db.VarChar(191)
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+  meta        Json?
+  default     Json?
+  options     Json?
+
+  @@index([model_id], map: "idx_25610_index_model_fields_on_model_id")
+  @@index([meta], map: "index_model_fields_on_meta", type: Gin)
+}
+
+model model_records {
+  id          BigInt   @id @default(autoincrement())
+  model_id    BigInt?
+  user_id     BigInt?
+  record_id   BigInt?
+  record_type String?  @db.VarChar(191)
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+  value       Json?
+
+  @@index([model_id], map: "idx_25635_index_model_records_on_model_id")
+  @@index([user_id], map: "idx_25635_index_model_records_on_user_id")
+  @@index([record_id, record_type], map: "idx_25635_object")
+  @@index([value], map: "index_model_records_on_value", type: Gin)
+}
+
+model models {
+  id                         BigInt   @id @default(autoincrement())
+  name                       String?  @db.VarChar(191)
+  user_id                    BigInt?
+  fields_count               BigInt?  @default(0)
+  description                String?
+  records_count              BigInt?  @default(0)
+  created_at                 DateTime @db.Timestamptz(6)
+  updated_at                 DateTime @db.Timestamptz(6)
+  category_id                BigInt?
+  key                        String?  @db.VarChar(191)
+  meta                       Json?
+  is_singleton               Boolean? @default(false)
+  is_inplace                 Boolean? @default(false)
+  max_records_count          Int?     @default(0)
+  max_records_count_per_user Int?     @default(0)
+
+  @@index([key], map: "idx_25600_index_models_on_key")
+  @@index([user_id], map: "idx_25600_index_models_on_user_id")
+  @@index([meta], map: "index_models_on_meta", type: Gin)
+}
+
+model move_the_car_cars {
+  id             BigInt   @id @default(autoincrement())
+  plate_number   String?  @db.VarChar(10)
+  model          String?  @db.VarChar(20)
+  year           BigInt?
+  user_id        BigInt?
+  state          Int?     @default(0) @db.SmallInt
+  created_at     DateTime @db.Timestamptz(6)
+  updated_at     DateTime @db.Timestamptz(6)
+  color          String?  @db.VarChar(18)
+  brand          String?  @db.VarChar(32)
+  public_uid     String?  @db.VarChar(36)
+  order_id       BigInt?
+  requests_count BigInt?  @default(0)
+
+  @@index([order_id], map: "idx_25643_index_move_the_car_cars_on_order_id")
+  @@index([plate_number], map: "idx_25643_index_move_the_car_cars_on_plate_number")
+  @@index([public_uid], map: "idx_25643_index_move_the_car_cars_on_public_uid")
+  @@index([user_id], map: "idx_25643_index_move_the_car_cars_on_user_id")
+}
+
+model move_the_car_requests {
+  id          BigInt    @id @default(autoincrement())
+  user_id     BigInt?
+  car_id      BigInt?
+  is_notified Boolean?  @default(false)
+  created_at  DateTime  @db.Timestamptz(6)
+  updated_at  DateTime  @db.Timestamptz(6)
+  note        String?   @db.VarChar(191)
+  received_at DateTime? @db.Timestamptz(6)
+  reply_text  String?   @db.VarChar(191)
+  public_uid  String?   @db.VarChar(36)
+  arrive_in   BigInt?
+  replied_at  DateTime? @db.Timestamptz(6)
+  session_id  String?   @db.VarChar(32)
+
+  @@index([car_id], map: "idx_25655_index_move_the_car_requests_on_car_id")
+  @@index([public_uid], map: "idx_25655_index_move_the_car_requests_on_public_uid")
+  @@index([user_id], map: "idx_25655_index_move_the_car_requests_on_user_id")
+}
+
+model movie_fields {
+  id                  BigInt    @id @default(autoincrement())
+  imdb                String?   @db.VarChar(255)
+  website             String?   @db.VarChar(255)
+  language            String?   @db.VarChar(255)
+  alias_name          String?   @db.VarChar(255)
+  country_id          BigInt?
+  length              BigInt?
+  release_on          DateTime? @db.Date
+  created_at          DateTime  @db.Timestamptz(6)
+  updated_at          DateTime  @db.Timestamptz(6)
+  mainland_release_on DateTime? @db.Timestamptz(6)
+  seasons_count       BigInt?   @default(1)
+  current_season      BigInt?   @default(1)
+  year                BigInt?
+  episodes_count      BigInt?   @default(1)
+  subtype             Int?      @default(0) @db.SmallInt
+}
+
+model navigations {
+  id          BigInt    @id @default(autoincrement())
+  name        String?   @db.VarChar(255)
+  description String?   @db.VarChar(255)
+  url         String?   @db.VarChar(255)
+  clicks      BigInt?   @default(0)
+  created_at  DateTime? @db.Timestamptz(6)
+  updated_at  DateTime? @db.Timestamptz(6)
+  visible     Boolean?  @default(true)
+  position    BigInt?   @default(0)
+  website_id  BigInt?
+}
+
+model next_ids {
+  id         BigInt   @id @default(autoincrement())
+  user_id    BigInt?
+  current_id BigInt?
+  name       String?  @db.VarChar(255)
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+}
+
+model notifications {
+  id          BigInt    @id @default(autoincrement())
+  user_id     BigInt?
+  app_id      BigInt?
+  created_at  DateTime? @db.Timestamptz(6)
+  updated_at  DateTime? @db.Timestamptz(6)
+  new         Boolean?  @default(true)
+  notify_type String?   @db.VarChar(255)
+  data        String?
+  template_id BigInt?
+  url         String?   @db.VarChar(191)
+  image       String?   @db.VarChar(191)
+  meta        String?
+}
+
+model oauth_access_grants {
+  id                 BigInt             @id @default(autoincrement())
+  resource_owner_id  BigInt
+  application_id     BigInt
+  token              String             @unique(map: "idx_25710_index_oauth_access_grants_on_token") @db.VarChar(255)
+  expires_in         BigInt
+  redirect_uri       String
+  created_at         DateTime           @db.Timestamptz(6)
+  revoked_at         DateTime?          @db.Timestamptz(6)
+  scopes             String?            @db.VarChar(255)
+  oauth_applications oauth_applications @relation(fields: [application_id], references: [id], onUpdate: Restrict, map: "fk_rails_b4b53e07b8")
+
+  @@index([application_id], map: "idx_25710_fk_rails_b4b53e07b8")
+}
+
+model oauth_access_tokens {
+  id                     BigInt              @id @default(autoincrement())
+  resource_owner_id      BigInt?
+  application_id         BigInt?
+  token                  String              @unique(map: "idx_25718_index_oauth_access_tokens_on_token") @db.VarChar(255)
+  refresh_token          String?             @unique(map: "idx_25718_index_oauth_access_tokens_on_refresh_token") @db.VarChar(255)
+  expires_in             BigInt?
+  revoked_at             DateTime?           @db.Timestamptz(6)
+  created_at             DateTime            @db.Timestamptz(6)
+  scopes                 String?             @db.VarChar(255)
+  previous_refresh_token String              @default("") @db.VarChar(255)
+  oauth_applications     oauth_applications? @relation(fields: [application_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_rails_732cb83ab7")
+
+  @@index([application_id], map: "idx_25718_fk_rails_732cb83ab7")
+  @@index([resource_owner_id], map: "idx_25718_index_oauth_access_tokens_on_resource_owner_id")
+}
+
+model oauth_applications {
+  id                  BigInt                @id @default(autoincrement())
+  name                String                @db.VarChar(255)
+  uid                 String                @unique(map: "idx_25728_index_oauth_applications_on_uid") @db.VarChar(255)
+  secret              String                @db.VarChar(255)
+  redirect_uri        String
+  scopes              String                @db.VarChar(255)
+  created_at          DateTime              @db.Timestamptz(6)
+  updated_at          DateTime              @db.Timestamptz(6)
+  confidential        Boolean               @default(true)
+  user_id             BigInt?
+  oauth_access_grants oauth_access_grants[]
+  oauth_access_tokens oauth_access_tokens[]
+}
+
+model oauth_nonces {
+  id         BigInt    @id @default(autoincrement())
+  nonce      String?   @db.VarChar(255)
+  timestamp  BigInt?
+  created_at DateTime? @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+
+  @@unique([nonce, timestamp], map: "idx_25736_index_oauth_nonces_on_nonce_and_timestamp")
+}
+
+model oauth_providers {
+  id                       BigInt    @id @default(autoincrement())
+  name                     String?   @db.VarChar(255)
+  user_id                  BigInt?
+  created_at               DateTime  @db.Timestamptz(6)
+  updated_at               DateTime  @db.Timestamptz(6)
+  auth_hash                String?
+  uname                    String?   @db.VarChar(255)
+  access_token             String?   @db.VarChar(191)
+  refresh_token            String?   @db.VarChar(191)
+  openid                   String?   @db.VarChar(191)
+  scope                    String?   @db.VarChar(191)
+  expires_in               BigInt?
+  type                     String?   @db.VarChar(32)
+  refresh_token_updated_at DateTime? @db.Timestamptz(6)
+  access_token_updated_at  DateTime? @db.Timestamptz(6)
+  userinfo                 String?
+  unionid                  String?   @db.VarChar(191)
+  app_id                   String?   @db.VarChar(191)
+
+  @@index([app_id], map: "idx_25742_index_oauth_providers_on_app_id")
+  @@index([name], map: "idx_25742_index_oauth_providers_on_name")
+  @@index([user_id], map: "idx_25742_index_oauth_providers_on_user_id")
+}
+
+model oauth_tokens {
+  id                    BigInt    @id @default(autoincrement())
+  user_id               BigInt?
+  type                  String?   @db.VarChar(20)
+  client_application_id BigInt?
+  token                 String?   @unique(map: "idx_25758_index_oauth_tokens_on_token") @db.VarChar(40)
+  secret                String?   @db.VarChar(40)
+  callback_url          String?   @db.VarChar(255)
+  verifier              String?   @db.VarChar(20)
+  scope                 String?   @db.VarChar(255)
+  authorized_at         DateTime? @db.Timestamptz(6)
+  invalidated_at        DateTime? @db.Timestamptz(6)
+  valid_to              DateTime? @db.Timestamptz(6)
+  created_at            DateTime? @db.Timestamptz(6)
+  updated_at            DateTime? @db.Timestamptz(6)
+}
+
+model order_items {
+  id                   BigInt   @id @default(autoincrement())
+  order_id             BigInt?
+  name                 String?  @db.VarChar(191)
+  price                BigInt?
+  discount             BigInt?
+  discount_amount      BigInt?
+  amount               BigInt?
+  subtotal             BigInt?
+  remark               String?  @db.VarChar(191)
+  created_at           DateTime @db.Timestamptz(6)
+  updated_at           DateTime @db.Timestamptz(6)
+  snapshot             String?
+  sku_id               BigInt?
+  item_id              BigInt?
+  orderable_id         BigInt?
+  orderable_type       String?  @db.VarChar(191)
+  total_price          BigInt?
+  shipping_fee         BigInt?  @default(0)
+  readable_attr_values Json?    @db.Json
+
+  @@index([item_id], map: "idx_25784_index_order_items_on_item_id")
+  @@index([order_id], map: "idx_25784_index_order_items_on_order_id")
+  @@index([sku_id], map: "idx_25784_index_order_items_on_sku_id")
+  @@index([orderable_id, orderable_type], map: "idx_25784_orderable")
+}
+
+model order_returns {
+  id                  BigInt   @id @default(autoincrement())
+  order_id            BigInt?
+  return_id           String?  @db.VarChar(191)
+  express_no          String?  @db.VarChar(191)
+  consignee_realname  String?  @db.VarChar(191)
+  consignee_telphone  String?  @db.VarChar(191)
+  consignee_telphone2 String?  @db.VarChar(191)
+  consignee_address   String?  @db.VarChar(191)
+  consignee_zip       String?  @db.VarChar(191)
+  logistics_type      BigInt?
+  fee                 BigInt?
+  return_type         BigInt?
+  handling_way        BigInt?
+  return_amount       BigInt?
+  reason              String?  @db.VarChar(191)
+  created_at          DateTime @db.Timestamptz(6)
+  updated_at          DateTime @db.Timestamptz(6)
+}
+
+model order_services {
+  id            BigInt   @id @default(autoincrement())
+  type          BigInt?
+  order_id      BigInt?
+  order_item_id BigInt?
+  reason        String?  @db.VarChar(191)
+  shop_id       BigInt?
+  created_at    DateTime @db.Timestamptz(6)
+  updated_at    DateTime @db.Timestamptz(6)
+  user_id       BigInt?
+  state         BigInt?
+  description   String?
+  quantity      BigInt?  @default(1)
+
+  @@index([shop_id], map: "idx_25811_index_order_services_on_shop_id")
+}
+
+model orders {
+  id                 BigInt    @id @default(autoincrement())
+  order_id           String?   @db.VarChar(191)
+  total_price        BigInt?
+  user_id            BigInt?
+  state              BigInt?   @default(0)
+  created_at         DateTime  @db.Timestamptz(6)
+  updated_at         DateTime  @db.Timestamptz(6)
+  rated              Boolean?  @default(false)
+  shop_id            BigInt?
+  snapshot           String?
+  user_address_id    BigInt?
+  order_type         BigInt?   @default(1)
+  type               String?   @db.VarChar(191)
+  paid_at            DateTime? @db.Timestamptz(6)
+  completed_at       DateTime? @db.Timestamptz(6)
+  actually_paid      BigInt?
+  remark             String?   @db.VarChar(191)
+  freight_fee        String?
+  pending_address_id Int?
+  goods_id           Int?
+
+  @@index([order_id], map: "idx_25771_index_orders_on_order_id")
+}
+
+model pages {
+  id          BigInt   @id @default(autoincrement())
+  name        String?  @db.VarChar(255)
+  description String?  @db.VarChar(255)
+  views_count BigInt?  @default(0)
+  fans_count  BigInt?  @default(0)
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+}
+
+model payments {
+  id         BigInt   @id @default(autoincrement())
+  user_id    BigInt?
+  type       String?  @db.VarChar(32)
+  amount     BigInt?  @default(0)
+  state      Int?     @default(0)
+  data       String?
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  order_id   BigInt?
+}
+
+model people {
+  id         BigInt   @id @default(autoincrement())
+  first_name String?  @db.VarChar(100)
+  last_name  String?  @db.VarChar(100)
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+}
+
+model permissions {
+  id          BigInt   @id @default(autoincrement())
+  record_id   BigInt?
+  record_type String?  @db.VarChar(191)
+  name        String?  @db.VarChar(191)
+  description String?  @db.VarChar(191)
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+}
+
+model photos {
+  id             BigInt    @id @default(autoincrement())
+  user_id        BigInt?
+  album_id       BigInt?
+  title          String?   @db.VarChar(255)
+  tags           String?   @db.VarChar(255)
+  created_at     DateTime? @db.Timestamptz(6)
+  updated_at     DateTime? @db.Timestamptz(6)
+  description    String?   @db.VarChar(255)
+  visits_count   BigInt?   @default(0)
+  comments_count BigInt?   @default(0)
+  index          Int?      @default(0)
+
+  @@index([album_id], map: "idx_25858_index_photos_on_album_id")
+  @@index([user_id], map: "idx_25858_index_photos_on_user_id")
+  @@index([index], map: "index_photos_on_index")
+}
+
+model poll_item_users {
+  id           BigInt   @id @default(autoincrement())
+  poll_item_id BigInt?
+  user_id      BigInt?
+  note         String?  @db.VarChar(191)
+  created_at   DateTime @db.Timestamptz(6)
+  updated_at   DateTime @db.Timestamptz(6)
+  poll_id      BigInt?
+
+  @@index([poll_item_id], map: "idx_25888_index_poll_item_users_on_poll_item_id")
+  @@index([user_id], map: "idx_25888_index_poll_item_users_on_user_id")
+}
+
+model poll_items {
+  id          BigInt   @id @default(autoincrement())
+  poll_id     BigInt?
+  color       String?  @db.VarChar(191)
+  title       String?  @db.VarChar(191)
+  users_count BigInt?
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+
+  @@index([poll_id], map: "idx_25881_index_poll_items_on_poll_id")
+}
+
+model polls {
+  id               BigInt    @id @default(autoincrement())
+  subject          String?   @db.VarChar(191)
+  user_id          BigInt?
+  state            BigInt?
+  expires_at       DateTime? @db.Timestamptz(6)
+  users_count      BigInt?   @default(0)
+  items_count      BigInt?
+  created_at       DateTime  @db.Timestamptz(6)
+  updated_at       DateTime  @db.Timestamptz(6)
+  max_select_count BigInt?   @default(1)
+  expire_days      BigInt?   @default(10)
+  description      String?
+
+  @@index([state], map: "idx_25870_index_polls_on_state")
+  @@index([user_id], map: "idx_25870_index_polls_on_user_id")
+}
+
+model posts {
+  id              BigInt                   @id @default(autoincrement())
+  user_id         BigInt?
+  category_id     BigInt?
+  location_id     BigInt?
+  title           String?                  @db.VarChar(191)
+  body            String?
+  created_at      DateTime                 @db.Timestamptz(6)
+  updated_at      DateTime                 @db.Timestamptz(6)
+  comments_count  BigInt?                  @default(0)
+  favorites_count BigInt?                  @default(0)
+  view_count      BigInt?                  @default(0)
+  state           Int?                     @db.SmallInt
+  expires_at      DateTime?                @db.Timestamptz(6)
+  visits_count    BigInt?                  @default(0)
+  ip              String?                  @db.Inet
+  text_searchable Unsupported("tsvector")? @default(dbgenerated("to_tsvector('zhcfg'::regconfig, (((COALESCE(title, ''::character varying))::text || ' '::text) || body))"))
+
+  @@index([text_searchable], map: "full_text_idx", type: Gin)
+  @@index([category_id], map: "idx_25894_index_posts_on_category_id")
+  @@index([expires_at], map: "idx_25894_index_posts_on_expires_at")
+  @@index([location_id], map: "idx_25894_index_posts_on_location_id")
+  @@index([state], map: "idx_25894_index_posts_on_state")
+  @@index([user_id], map: "idx_25894_index_posts_on_user_id")
+}
+
+model printings {
+  id          BigInt    @id @default(autoincrement())
+  user_id     BigInt?
+  amount      BigInt?   @default(1)
+  pages_count BigInt?   @default(0)
+  note        String?   @default("") @db.VarChar(191)
+  colorful    Boolean?  @default(true)
+  paper       BigInt?   @default(0)
+  created_at  DateTime  @db.Timestamptz(6)
+  updated_at  DateTime  @db.Timestamptz(6)
+  state       BigInt?   @default(0)
+  order_id    BigInt?
+  printed_at  DateTime? @db.Timestamptz(6)
+
+  @@index([state], map: "idx_25906_index_printings_on_state")
+  @@index([user_id], map: "idx_25906_index_printings_on_user_id")
+}
+
+model products {
+  id             BigInt    @id @default(autoincrement())
+  name           String?   @db.VarChar(255)
+  description    String?
+  price          BigInt?
+  merchant_id    BigInt?
+  user_id        BigInt?
+  pictures_count BigInt?   @default(0)
+  created_at     DateTime  @db.Timestamptz(6)
+  updated_at     DateTime  @db.Timestamptz(6)
+  category_id    BigInt?
+  content        String?
+  model          String?   @db.VarChar(191)
+  expires_at     DateTime? @db.Timestamptz(6)
+  valid_days     BigInt?
+}
+
+model profiles {
+  id          BigInt    @id @default(autoincrement())
+  birthday    DateTime? @db.Date
+  zodiac      BigInt?
+  country     String?   @db.VarChar(255)
+  province    String?   @db.VarChar(255)
+  city        String?   @db.VarChar(255)
+  street      String?   @db.VarChar(255)
+  postcode    String?   @db.VarChar(255)
+  mobile      String?   @db.VarChar(255)
+  height      BigInt?
+  weight      BigInt?
+  created_at  DateTime? @db.Timestamptz(6)
+  updated_at  DateTime? @db.Timestamptz(6)
+  location_id BigInt?
+  user_id     BigInt?
+  summary     String?
+  qq          String?   @db.VarChar(255)
+  wechat      String?   @db.VarChar(255)
+}
+
+model promotions {
+  id            BigInt    @id @default(autoincrement())
+  item_id       BigInt?
+  user_id       BigInt?
+  start_at      DateTime? @db.Timestamptz(6)
+  end_at        DateTime? @db.Timestamptz(6)
+  discount      BigInt?
+  reduced_price BigInt?
+  type          BigInt?
+  created_at    DateTime  @db.Timestamptz(6)
+  updated_at    DateTime  @db.Timestamptz(6)
+  amount        BigInt?
+}
+
+model properties {
+  id          BigInt   @id @default(autoincrement())
+  name        String?  @db.VarChar(191)
+  description String?  @db.VarChar(191)
+  value       BigInt?
+  value_unit  String?  @db.VarChar(191)
+  function    String?  @db.VarChar(191)
+  category_id BigInt?
+  classes     String?  @db.VarChar(191)
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+  type        String?  @db.VarChar(32)
+  price       BigInt?
+
+  @@index([category_id], map: "idx_25947_index_properties_on_category_id")
+  @@index([function], map: "idx_25947_index_properties_on_function")
+}
+
+model recommendations {
+  id                 BigInt    @id @default(autoincrement())
+  recommendable_type String?   @db.VarChar(255)
+  recommendable_id   BigInt?
+  level              BigInt?
+  reason             String?   @db.VarChar(255)
+  title              String?   @db.VarChar(255)
+  visits_count       BigInt?   @default(0)
+  admin_id           BigInt?
+  user_id            BigInt?
+  created_at         DateTime  @db.Timestamptz(6)
+  updated_at         DateTime  @db.Timestamptz(6)
+  description        String?   @db.VarChar(255)
+  expires_at         DateTime? @db.Timestamptz(6)
+  type               String?   @db.VarChar(191)
+  score              Int?      @default(0)
+
+  @@index([admin_id], map: "idx_25960_index_recommendations_on_admin_id")
+  @@index([level], map: "idx_25960_index_recommendations_on_level")
+  @@index([type], map: "idx_25960_index_recommendations_on_type")
+  @@index([user_id], map: "idx_25960_index_recommendations_on_user_id")
+  @@index([visits_count], map: "idx_25960_index_recommendations_on_view_count")
+  @@index([recommendable_type, recommendable_id], map: "idx_25960_recommendable")
+  @@index([score], map: "index_recommendations_on_score")
+}
+
+model referers {
+  id           BigInt   @id @default(autoincrement())
+  user_id      BigInt?
+  referer_id   BigInt?
+  created_at   DateTime @db.Timestamptz(6)
+  updated_at   DateTime @db.Timestamptz(6)
+  wechat       String?  @db.VarChar(32)
+  phone_number String?  @db.VarChar(20)
+  location_id  BigInt?
+  contact      String?  @db.VarChar(30)
+  session_id   BigInt?
+
+  @@index([location_id], map: "idx_25973_index_referers_on_location_id")
+  @@index([phone_number], map: "idx_25973_index_referers_on_phone_number")
+}
+
+model related_records {
+  id          BigInt   @id @default(autoincrement())
+  source_type String?  @db.VarChar(32)
+  record_type String?  @db.VarChar(32)
+  source_id   Int?
+  record_id   Int?
+  created_at  DateTime @db.Timestamp(6)
+  updated_at  DateTime @db.Timestamp(6)
+
+  @@index([record_type, record_id], map: "related_records_record")
+  @@index([source_type, source_id], map: "related_records_source")
+}
+
+model reviews {
+  id              BigInt    @id @default(autoincrement())
+  body            String?
+  user_id         BigInt?
+  score           Int?      @default(0) @db.SmallInt
+  reviewable_id   BigInt?
+  reviewable_type String?   @db.VarChar(191)
+  comments_count  BigInt?   @default(0)
+  visits_count    BigInt?   @default(0)
+  created_at      DateTime  @db.Timestamptz(6)
+  updated_at      DateTime  @db.Timestamptz(6)
+  order_id        BigInt?
+  sku_id          BigInt?
+  item_id         BigInt?
+  order_item_id   BigInt?
+  favorites_count BigInt?   @default(0)
+  edited_at       DateTime? @db.Timestamptz(6)
+  append_body     String?
+  append_at       DateTime? @db.Timestamptz(6)
+  shop_id         Int?
+  extra           Json?     @default("{}")
+  reviewable_url  String?   @default("") @db.VarChar
+  reviewable_name String?   @default("") @db.VarChar
+
+  @@index([user_id], map: "idx_25981_index_reviews_on_user_id")
+  @@index([reviewable_id, reviewable_type], map: "idx_25981_reviewable")
+  @@index([extra], map: "index_reviews_on_extra", type: Gin)
+  @@index([shop_id], map: "index_reviews_on_shop_id")
+}
+
+model schema_migrations {
+  version String @id @db.VarChar
+}
+
+model search_histories {
+  id          BigInt   @id @default(autoincrement())
+  user_id     BigInt?
+  keyword     String?  @db.VarChar(191)
+  search_type String?  @db.VarChar(191)
+  count       BigInt?  @default(0)
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+
+  @@index([keyword], map: "idx_25996_index_search_histories_on_keyword")
+  @@index([user_id], map: "idx_25996_index_search_histories_on_user_id")
+}
+
+model sessions {
+  id            BigInt    @id @default(autoincrement())
+  token         String    @db.VarChar(191)
+  user_id       BigInt
+  user_agent    String
+  ip            String?   @default("0.0.0.0") @db.Inet
+  visit_count   BigInt?   @default(0)
+  last_visit_at DateTime  @db.Timestamptz(6)
+  created_at    DateTime  @db.Timestamptz(6)
+  updated_at    DateTime  @db.Timestamptz(6)
+  deleted_at    DateTime? @db.Timestamptz(6)
+
+  @@index([deleted_at], map: "idx_26004_index_sessions_on_deleted_at")
+  @@index([token], map: "idx_26004_index_sessions_on_token")
+  @@index([user_id], map: "idx_26004_index_sessions_on_user_id")
+}
+
+model settings {
+  id                  BigInt   @id @default(autoincrement())
+  category            String?  @db.VarChar(191)
+  name                String?  @db.VarChar(191)
+  value               String?
+  value_type          BigInt?
+  client              Boolean? @default(true)
+  default             String?
+  options             String?
+  max_select_count    BigInt?
+  validate_regexp     String?  @db.VarChar(191)
+  validate_max_length BigInt?
+  description         String?  @db.VarChar(191)
+}
+
+model shared_links {
+  id             BigInt    @id @default(autoincrement())
+  url            String?   @db.VarChar(191)
+  user_id        BigInt?
+  visit_count    BigInt?
+  last_shared_at DateTime? @db.Timestamptz(6)
+  created_at     DateTime  @db.Timestamptz(6)
+  updated_at     DateTime  @db.Timestamptz(6)
+
+  @@index([user_id, url], map: "idx_26025_user_shared_url")
+}
+
+model shop_fans {
+  id         BigInt   @id @default(autoincrement())
+  shop_id    BigInt?
+  user_id    BigInt?
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+}
+
+model shop_fields {
+  id             BigInt   @id @default(autoincrement())
+  address        String?  @db.VarChar(191)
+  business_hours String?  @db.VarChar(191)
+  telephone      String?  @db.VarChar(191)
+  mobile         String?  @db.VarChar(191)
+  shop_id        BigInt?
+  created_at     DateTime @db.Timestamptz(6)
+  updated_at     DateTime @db.Timestamptz(6)
+  verified       Boolean? @default(false)
+  is_yellow_page Boolean? @default(true)
+  contacter      String?  @db.VarChar(191)
+  slogon         String?  @db.VarChar(191)
+  location_id    BigInt?
+  domain         String?  @db.VarChar(20)
+}
+
+model shops {
+  id         BigInt   @id @default(autoincrement())
+  name       String?  @db.VarChar(255)
+  lat        Float?
+  lng        Float?
+  address    String?  @db.VarChar(255)
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+}
+
+model singers {
+  id         BigInt   @id @default(autoincrement())
+  name       String?  @db.VarChar
+  created_at DateTime @db.Timestamp(6)
+  updated_at DateTime @db.Timestamp(6)
+}
+
+model songs {
+  id         BigInt   @id @default(autoincrement())
+  name       String?  @db.VarChar
+  file_url   String?  @db.VarChar
+  singer_id  Int?
+  created_at DateTime @db.Timestamp(6)
+  updated_at DateTime @db.Timestamp(6)
+}
+
+model spider_pages {
+  id             BigInt    @id @default(autoincrement())
+  url            String?
+  done           Boolean?  @default(false)
+  created_at     DateTime? @db.Timestamptz(6)
+  updated_at     DateTime? @db.Timestamptz(6)
+  labels_count   BigInt?   @default(0)
+  labels_hash    String?   @db.VarChar(32)
+  published      Boolean?  @default(false)
+  fragment       Boolean?  @default(false)
+  content_length BigInt?
+  site           String?   @db.VarChar(255)
+  url_hash       String?   @db.VarChar(32)
+  content        String?
+  page_id        String?   @db.VarChar
+
+  @@index([url], map: "idx_26061_index_spider_pages_on_url")
+  @@index([url_hash], map: "idx_26061_index_spider_pages_on_url_hash")
+}
+
+model spider_rules {
+  id           BigInt   @id @default(autoincrement())
+  key          String?  @db.VarChar(191)
+  name         String?  @db.VarChar(191)
+  description  String?  @db.VarChar(191)
+  match        String?  @db.VarChar(191)
+  example_urls String?  @db.VarChar(191)
+  labels       String?
+  filters      String?
+  created_at   DateTime @db.Timestamptz(6)
+  updated_at   DateTime @db.Timestamptz(6)
+}
+
+model spider_source_lists {
+  id               BigInt    @id @default(autoincrement())
+  category_name    String?   @db.VarChar(50)
+  pages            BigInt?
+  url              String?   @db.VarChar(255)
+  site_name        String?   @db.VarChar(30)
+  enabled          Boolean?  @default(true)
+  state            String?   @default("normal") @db.VarChar(15)
+  spider_name      String?   @db.VarChar(50)
+  created_at       DateTime? @db.Timestamptz(6)
+  updated_at       DateTime? @db.Timestamptz(6)
+  last_crawl_at    DateTime? @db.Timestamptz(6)
+  last_crawl_count BigInt?   @default(0)
+}
+
+model spider_sources {
+  id          BigInt    @id @default(autoincrement())
+  spider_name String?   @db.VarChar(255)
+  enabled     Boolean?  @default(true)
+  position    BigInt?   @default(0)
+  sid         String?   @db.VarChar(255)
+  created_at  DateTime? @db.Timestamptz(6)
+  updated_at  DateTime? @db.Timestamptz(6)
+}
+
+model stats {
+  id          BigInt    @id @default(autoincrement())
+  year        BigInt?   @default(0)
+  month       BigInt?   @default(0)
+  day         BigInt?   @default(0)
+  hour        BigInt?   @default(0)
+  minute      BigInt?   @default(0)
+  count       BigInt?   @default(0)
+  name        String?   @default("") @db.VarChar(191)
+  created_at  DateTime  @db.Timestamptz(6)
+  updated_at  DateTime  @db.Timestamptz(6)
+  precision   BigInt?   @default(0)
+  time        DateTime? @db.Timestamptz(6)
+  record_id   BigInt?
+  record_type String?   @db.VarChar(191)
+
+  @@index([record_id, record_type], map: "idx_26110_record")
+}
+
+model subject_celebrities {
+  id           BigInt   @id @default(autoincrement())
+  subject_id   BigInt?
+  celebrity_id BigInt?
+  role         String?  @db.VarChar(32)
+  created_at   DateTime @db.Timestamptz(6)
+  updated_at   DateTime @db.Timestamptz(6)
+
+  @@index([celebrity_id], map: "idx_26144_index_subject_celebrities_on_celebrity_id")
+  @@index([subject_id], map: "idx_26144_index_subject_celebrities_on_subject_id")
+}
+
+model subjects {
+  id                BigInt                   @id @default(autoincrement())
+  name              String?                  @db.VarChar(255)
+  type              String?                  @db.VarChar(255)
+  description       String?
+  user_id           BigInt?
+  category_id       BigInt?
+  reviews_count     BigInt?                  @default(0)
+  collections_count BigInt?                  @default(0)
+  visits_count      BigInt?                  @default(0)
+  pictures_count    BigInt?                  @default(0)
+  fans_count        BigInt?                  @default(0)
+  created_at        DateTime                 @db.Timestamptz(6)
+  updated_at        DateTime                 @db.Timestamptz(6)
+  english_name      String?                  @db.VarChar(255)
+  picture_id        BigInt?
+  original_name     String?                  @db.VarChar(255)
+  likes_count       BigInt?                  @default(0)
+  parent_id         BigInt?
+  favorites_count   BigInt?                  @default(0)
+  state             BigInt?
+  meta              Json?                    @default("{}")
+  score             Float?                   @default(0)
+  text_searchable   Unsupported("tsvector")? @default(dbgenerated("to_tsvector('zhcfg'::regconfig, (((COALESCE(name, ''::character varying))::text || ' '::text) || description))"))
+  articles_count    Int?                     @default(0)
+  photos_count      Int?                     @default(0)
+  links_updated_at  DateTime?                @db.Timestamp(6)
+
+  @@index([text_searchable], map: "full_text_idx_for_subjects", type: Gin)
+  @@index([category_id], map: "idx_26124_index_subjects_on_category_id")
+  @@index([state], map: "idx_26124_index_subjects_on_state")
+  @@index([user_id], map: "idx_26124_index_subjects_on_user_id")
+  @@index([links_updated_at], map: "index_subjects_on_links_updated_at")
+  @@index([meta], map: "index_subjects_on_meta", type: Gin)
+  @@index([name], map: "index_subjects_on_name")
+}
+
+model taggings {
+  id            BigInt    @id @default(autoincrement())
+  tag_id        BigInt?
+  taggable_id   BigInt?
+  taggable_type String?   @db.VarChar(255)
+  tagger_id     BigInt?
+  tagger_type   String?   @db.VarChar(255)
+  context       String?   @db.VarChar(255)
+  created_at    DateTime? @db.Timestamptz(6)
+
+  @@unique([tag_id, taggable_id, taggable_type, context, tagger_id, tagger_type], map: "idx_26150_taggings_idx")
+  @@index([context], map: "idx_26150_index_taggings_on_context")
+  @@index([tag_id], map: "idx_26150_index_taggings_on_tag_id")
+  @@index([taggable_id], map: "idx_26150_index_taggings_on_taggable_id")
+  @@index([taggable_id, taggable_type, context], map: "idx_26150_index_taggings_on_taggable_id_and_taggable_type_and_c")
+  @@index([taggable_type], map: "idx_26150_index_taggings_on_taggable_type")
+  @@index([tagger_id], map: "idx_26150_index_taggings_on_tagger_id")
+  @@index([tagger_id, tagger_type], map: "idx_26150_index_taggings_on_tagger_id_and_tagger_type")
+  @@index([taggable_id, taggable_type, tagger_id, context], map: "idx_26150_taggings_idy")
+}
+
+model tags {
+  id             BigInt  @id @default(autoincrement())
+  name           String? @unique(map: "idx_26160_index_tags_on_name") @db.VarChar(255)
+  taggings_count BigInt? @default(0)
+  count          BigInt? @default(0)
+}
+
+model task_queues {
+  id             BigInt    @id @default(autoincrement())
+  queueable_type String?   @db.VarChar(32)
+  queueable_id   BigInt?
+  data           String?
+  state          Int?      @db.SmallInt
+  run_at         DateTime? @db.Timestamptz(6)
+  user_id        BigInt?
+  action         String?   @db.VarChar(191)
+  result         String?
+  last_run_at    DateTime? @db.Timestamptz(6)
+  created_at     DateTime  @db.Timestamptz(6)
+  updated_at     DateTime  @db.Timestamptz(6)
+
+  @@index([run_at], map: "idx_26168_index_task_queues_on_run_at")
+  @@index([state], map: "idx_26168_index_task_queues_on_state")
+  @@index([user_id], map: "idx_26168_index_task_queues_on_user_id")
+  @@index([queueable_id, queueable_type], map: "idx_26168_queueable")
+}
+
+model teleplay_fields {
+  id             BigInt    @id @default(autoincrement())
+  language       String?   @db.VarChar(255)
+  season         Int?
+  episodes_count BigInt?   @default(0)
+  created_at     DateTime  @db.Timestamptz(6)
+  updated_at     DateTime  @db.Timestamptz(6)
+  release_on     DateTime? @db.Timestamp(6)
+  website        String?   @db.VarChar(255)
+  alias_name     String?   @db.VarChar(255)
+  country_id     BigInt?
+  seasons_count  BigInt?   @default(1)
+  current_season BigInt?   @default(1)
+  update_weekday Int?      @default(0) @db.SmallInt
+  teleplay_type  BigInt?   @default(0)
+  finished       Boolean?  @default(false)
+}
+
+model teleplay_season_fields {
+  id         BigInt   @id @default(autoincrement())
+  season     BigInt?  @default(1)
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+}
+
+model teleplay_seasons {
+  id                  BigInt    @id @default(autoincrement())
+  teleplay_id         BigInt?
+  year                BigInt?
+  release_on          DateTime? @db.Timestamptz(6)
+  episodes_count      Int?      @default(1) @db.SmallInt
+  last_episode_number BigInt?   @default(0)
+  update_on           BigInt?
+  created_at          DateTime  @db.Timestamptz(6)
+  updated_at          DateTime  @db.Timestamptz(6)
+}
+
+model templates {
+  id          BigInt   @id @default(autoincrement())
+  content     String?
+  fingerprint String?  @db.VarChar(191)
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+
+  @@index([fingerprint], map: "idx_26205_index_templates_on_fingerprint")
+}
+
+model text_digests {
+  id     BigInt  @id @default(autoincrement())
+  text   String?
+  digest String? @db.VarChar(191)
+}
+
+model ticket_replies {
+  id         BigInt   @id @default(autoincrement())
+  content    String?
+  user_id    BigInt?
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  ticket_id  BigInt?
+
+  @@index([ticket_id], map: "idx_26229_index_ticket_replies_on_ticket_id")
+}
+
+model tickets {
+  id              BigInt    @id @default(autoincrement())
+  title           String?   @db.VarChar(191)
+  content         String?
+  state           BigInt?
+  user_id         BigInt?
+  last_replied_at DateTime? @db.Timestamptz(6)
+  created_at      DateTime  @db.Timestamptz(6)
+  updated_at      DateTime  @db.Timestamptz(6)
+}
+
+model tree_nodes {
+  id             BigInt    @id @default(autoincrement())
+  type           String?   @db.VarChar(255)
+  name           String?   @db.VarChar(255)
+  description    String?   @db.VarChar(255)
+  user_id        BigInt?
+  objects_count  BigInt?   @default(0)
+  created_at     DateTime? @db.Timestamptz(6)
+  updated_at     DateTime? @db.Timestamptz(6)
+  ancestry       String?   @db.VarChar(255)
+  ancestry_depth BigInt?
+  position       BigInt?   @default(0)
+  state          BigInt?   @default(0)
+  sid            String?   @db.VarChar(32)
+  visible        Boolean?  @default(true)
+  model_id       BigInt?
+  children_count BigInt?   @default(0)
+
+  @@index([sid], map: "idx_26236_index_tree_nodes_on_sid")
+  @@index([type], map: "idx_26236_index_tree_nodes_on_type")
+  @@index([user_id], map: "idx_26236_index_tree_nodes_on_user_id")
+}
+
+model tweets {
+  id                BigInt    @id @default(autoincrement())
+  user_id           BigInt?
+  comments_count    BigInt?   @default(0)
+  message           String?   @db.VarChar(255)
+  created_at        DateTime? @db.Timestamptz(6)
+  updated_at        DateTime? @db.Timestamptz(6)
+  url               String?   @db.VarChar(255)
+  music_url         String?   @db.VarChar(255)
+  video_url         String?   @db.VarChar(255)
+  privacy           Int?      @default(0) @db.SmallInt
+  picture_file_name String?   @db.VarChar(255)
+}
+
+model user_addresses {
+  id           BigInt   @id @default(autoincrement())
+  consignee    String?  @db.VarChar(20)
+  location_id  BigInt?
+  zipcode      String?  @db.VarChar(20)
+  tel          String?  @db.VarChar(20)
+  mobile       String?  @db.VarChar(20)
+  best_time    String?  @db.VarChar(50)
+  name         String?  @db.VarChar(20)
+  address      String?  @db.VarChar(100)
+  created_at   DateTime @db.Timestamptz(6)
+  updated_at   DateTime @db.Timestamptz(6)
+  user_id      BigInt?
+  is_default   Boolean? @default(false)
+  address_type BigInt?
+  position     BigInt?  @default(1)
+
+  @@index([location_id], map: "idx_26299_index_user_addresses_on_location_id")
+}
+
+model user_coupons {
+  id         BigInt    @id @default(autoincrement())
+  user_id    BigInt?
+  coupon_id  BigInt?
+  state      BigInt?
+  sn         String?   @db.VarChar(191)
+  used_at    DateTime? @db.Timestamptz(6)
+  order_id   BigInt?
+  created_at DateTime  @db.Timestamptz(6)
+  updated_at DateTime  @db.Timestamptz(6)
+}
+
+model user_follows {
+  id          BigInt    @id @default(autoincrement())
+  user_id     BigInt?
+  follower_id BigInt?
+  created_at  DateTime? @db.Timestamptz(6)
+  updated_at  DateTime? @db.Timestamptz(6)
+
+  @@index([user_id, follower_id], map: "idx_26319_user_follow")
+}
+
+model user_group_permissions {
+  id            BigInt   @id @default(autoincrement())
+  user_group_id BigInt?
+  permission_id BigInt?
+  enabled       Boolean? @default(false)
+  created_at    DateTime @db.Timestamptz(6)
+  updated_at    DateTime @db.Timestamptz(6)
+}
+
+model user_groups {
+  id             BigInt   @id @default(autoincrement())
+  name           String?  @db.VarChar(255)
+  description    String?  @db.VarChar(255)
+  credits_higher BigInt?
+  avatar         String?  @db.VarChar(255)
+  users_count    BigInt?
+  level          BigInt?
+  color          String?  @db.VarChar(255)
+  auto_upgrade   Boolean? @default(true)
+  permissions    String?
+  settings       Json?    @default("{}")
+}
+
+model user_products {
+  id         BigInt    @id @default(autoincrement())
+  user_id    BigInt?
+  product_id BigInt?
+  order_id   BigInt?
+  created_at DateTime  @db.Timestamptz(6)
+  updated_at DateTime  @db.Timestamptz(6)
+  expires_at DateTime? @db.Timestamptz(6)
+}
+
+model user_properties {
+  id          BigInt   @id @default(autoincrement())
+  count       BigInt?  @default(0)
+  property_id BigInt?
+  user_id     BigInt?
+  created_at  DateTime @db.Timestamptz(6)
+  updated_at  DateTime @db.Timestamptz(6)
+
+  @@index([property_id], map: "idx_26347_index_user_properties_on_property_id")
+  @@index([user_id], map: "idx_26347_index_user_properties_on_user_id")
+}
+
+model user_stats {
+  id                        BigInt   @id @default(autoincrement())
+  comments_count            BigInt?  @default(0)
+  favorites_count           BigInt?  @default(0)
+  orders_count              BigInt?  @default(0)
+  friendships_count         BigInt?  @default(0)
+  albums_count              BigInt?  @default(0)
+  tweets_count              BigInt?  @default(0)
+  blogs_count               BigInt?  @default(0)
+  fans_count                BigInt?  @default(0)
+  posts_count               BigInt?  @default(0)
+  group_topics_count        BigInt?  @default(0)
+  group_posts_count         BigInt?  @default(0)
+  completed_orders_count    BigInt?  @default(0)
+  unpaied_orders_count      BigInt?  @default(0)
+  paied_orders_count        BigInt?  @default(0)
+  pending_friendships_count BigInt?  @default(0)
+  blocked_friendships_count BigInt?  @default(0)
+  normal_friendships_count  BigInt?  @default(0)
+  user_id                   BigInt?
+  created_at                DateTime @db.Timestamptz(6)
+  updated_at                DateTime @db.Timestamptz(6)
+  cart_items_count          BigInt?  @default(0)
+}
+
+model users {
+  id                  BigInt    @id @default(autoincrement())
+  username            String?   @db.VarChar(255)
+  money               BigInt?   @default(0)
+  email               String?   @db.VarChar(255)
+  created_at          DateTime? @db.Timestamptz(6)
+  updated_at          DateTime? @db.Timestamptz(6)
+  nickname            String?   @db.VarChar(255)
+  gender              BigInt?
+  age                 BigInt?
+  last_request_at     DateTime? @db.Timestamptz(6)
+  coins               BigInt?   @default(0)
+  credits             BigInt?   @default(0)
+  user_group_id       BigInt?
+  follows_count       BigInt?   @default(0)
+  sign_in_count       BigInt?   @default(0)
+  unconfirmed_email   String?   @db.VarChar(255)
+  failed_attempts     BigInt?   @default(0)
+  encrypted_password  String?   @db.VarChar(255)
+  admin_group_id      BigInt?
+  location_id         BigInt?
+  domain              String    @db.VarChar(20)
+  comments_count      BigInt?   @default(0)
+  cell_phone_number   String?   @db.VarChar(191)
+  group_replies_count BigInt?   @default(0)
+  permissions         String?
+  settings            Json?
+  state               Int?      @default(0)
+
+  @@index([domain], map: "idx_26267_index_users_on_domain")
+  @@index([email], map: "idx_26267_index_users_on_email_and_password")
+}
+
+model variables {
+  id         BigInt   @id @default(autoincrement())
+  key        String?  @db.VarChar(64)
+  value      String?
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+
+  @@index([key], map: "idx_26376_index_variables_on_key")
+}
+
+model verification_codes {
+  id                BigInt    @id @default(autoincrement())
+  code              String?   @db.VarChar(191)
+  purpose           String?   @db.VarChar(191)
+  created_at        DateTime  @db.Timestamptz(6)
+  updated_at        DateTime  @db.Timestamptz(6)
+  last_delivered_at DateTime? @db.Timestamptz(6)
+  expires_in        BigInt?   @default(0)
+  acceptor          String?   @db.VarChar(64)
+  type              String?   @db.VarChar(64)
+  data              String?
+  failed_count      BigInt?   @default(0)
+  revoked           Boolean?  @default(false)
+  verified          Boolean?  @default(false)
+  creator_id        BigInt?
+}
+
+model videos {
+  id           BigInt   @id @default(autoincrement())
+  type         String?  @db.VarChar(191)
+  url          String?  @db.VarChar(191)
+  visits_count BigInt?
+  title        String?  @db.VarChar(191)
+  description  String?
+  user_id      BigInt?
+  category_id  BigInt?
+  created_at   DateTime @db.Timestamptz(6)
+  updated_at   DateTime @db.Timestamptz(6)
+}
+
+model visits {
+  id             BigInt    @id @default(autoincrement())
+  visitable_id   BigInt?
+  visitable_type String?   @db.VarChar(255)
+  user_id        BigInt?
+  session_id     String?   @db.VarChar(255)
+  created_at     DateTime? @db.Timestamptz(6)
+  updated_at     DateTime? @db.Timestamptz(6)
+  visit_count    BigInt?   @default(0)
+  last_visit_at  DateTime? @db.Timestamptz(6)
+  url            String?   @db.VarChar(191)
+  ip             String?   @db.Inet
+  title          String?   @db.VarChar
+  from           String?   @default("") @db.VarChar(32)
+
+  @@index([updated_at], map: "idx_26409_index_visits_on_updated_at")
+  @@index([url], map: "idx_26409_index_visits_on_url")
+  @@index([visit_count], map: "idx_26409_index_visits_on_visit_count")
+  @@index([visitable_id, visitable_type], map: "idx_26409_index_visits_on_visitable")
+  @@index([session_id, updated_at], map: "idx_26409_session_id_and_updated_at")
+  @@index([user_id, session_id], map: "idx_26409_user_id_session_id")
+}
+
+model webpages {
+  id         BigInt   @id @default(autoincrement())
+  title      String?  @db.VarChar(191)
+  body       String?
+  url        String?  @db.VarChar(191)
+  website_id BigInt?
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  user_id    BigInt?
+
+  @@index([user_id], map: "idx_26421_index_webpages_on_user_id")
+}
+
+model websites {
+  id         BigInt   @id @default(autoincrement())
+  name       String?  @db.VarChar(191)
+  user_id    BigInt?
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  owner_id   BigInt?
+  owner_type String?  @db.VarChar(191)
+
+  @@index([owner_id, owner_type], map: "idx_26430_owner")
+}
+
+model weixin_messages {
+  id         BigInt   @id @default(autoincrement())
+  uid        String?  @db.VarChar(191)
+  message    String?
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+  context    String?  @db.VarChar(191)
+}
+
+model weixin_posts {
+  id         BigInt   @id @default(autoincrement())
+  user_id    BigInt?
+  openid     String?  @db.VarChar(191)
+  title      String?  @db.VarChar(191)
+  body       String?
+  images     String?
+  position   String?
+  created_at DateTime @db.Timestamptz(6)
+  updated_at DateTime @db.Timestamptz(6)
+
+  @@index([user_id], map: "idx_26446_index_weixin_posts_on_user_id")
+}
+
+model weixin_users {
+  id              BigInt   @id @default(autoincrement())
+  subscribe       Boolean? @default(false)
+  openid          String?  @db.VarChar(32)
+  nickname        String?  @db.VarChar(32)
+  sex             Int?     @default(0) @db.SmallInt
+  language        String?  @db.VarChar(20)
+  city            String?  @db.VarChar(20)
+  province        String?  @db.VarChar(10)
+  country         String?  @db.VarChar(20)
+  headimgurl      String?  @db.VarChar(191)
+  subscribe_time  BigInt?
+  unionid         String?  @db.VarChar(32)
+  remark          String?  @default("") @db.VarChar(191)
+  groupid         BigInt?  @default(0)
+  tagid_list      String?
+  subscribe_scene String?  @db.VarChar(30)
+  qr_scene        Int?     @db.SmallInt
+  qr_scene_str    String?  @db.VarChar(191)
+  created_at      DateTime @db.Timestamptz(6)
+  updated_at      DateTime @db.Timestamptz(6)
+
+  @@index([openid], map: "idx_26455_index_weixin_users_on_openid")
+  @@index([unionid], map: "idx_26455_index_weixin_users_on_unionid")
 }
