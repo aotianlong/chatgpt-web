@@ -1,4 +1,4 @@
-import { useUserStore , useAuthStore} from '../store'
+import { useAuthStore, useUserStore } from '../store'
 
 const userStore = useUserStore()
 const authStore = useAuthStore()
@@ -10,11 +10,12 @@ const authStore = useAuthStore()
 */
 window.addEventListener('message', (event) => {
   const { data } = event
-  if (data.action === 'UpdateUser') {
+  console.log('iframe on message', data, event)
+  if (data.action === 'updateUser')
     userStore.updateUserInfo(data.data)
-  }
 
-  if (data.action === 'UpdateToken') {
-	  authStore.setToken(data.token);
-  }
+  if (data.action === 'updateToken')
+	  authStore.setToken(data.token)
 })
+
+console.log('ifame console output')
