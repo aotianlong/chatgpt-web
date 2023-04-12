@@ -13,7 +13,8 @@ const show = ref(false)
       <UserAvatar />
     </div>
 
-    <HoverButton class="hide" @click="show = true">
+    <!-- 不需要这个设置按钮 -->
+    <HoverButton class="hidden" @click="show = true">
       <span class="text-xl text-[#4f555e] dark:text-white">
         <SvgIcon icon="ri:settings-4-line" />
       </span>
