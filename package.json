@@ -20,7 +20,6 @@
     "lint:fix": "eslint . --fix",
     "bootstrap": "pnpm install && pnpm run common:prepare",
     "common:cleanup": "rimraf node_modules && rimraf pnpm-lock.yaml",
-    "common:prepare": "husky install",
     "deploy": "rsync -avz dist/* app@mbmgpt.com:apps/musicgpt-chat/.",
     "push": "git push app@mbmgpt.com:source/chatgpt-web"
   },
