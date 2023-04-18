@@ -5,9 +5,12 @@ import { chatConfig, chatReplyProcess, currentModel } from './chatgpt'
 import { auth, getSession } from './middleware/auth-with-db'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
+import { PrismaClient } from '@prisma/client'
 
 const app = express()
 const router = express.Router()
+
+const prisma = new PrismaClient()
 
 app.use(express.static('public'))
 app.use(express.json())
@@ -24,8 +27,16 @@ router.post('/chat-process', [auth, limiter], async (req, res) => {
 
 	try {
 		const { prompt, options = {}, systemMessage } = req.body as RequestProps
+		prisma.mg_messages({
+			data: {
+				message: prompt,
+				created_at: new Date(),
+				updated_at: new Date(),
+			},
+		})
+		// 记录 prompt
 		let firstChunk = true
-		await chatReplyProcess({
+		const result = await chatReplyProcess({
 			message: prompt,
 			lastContext: options,
 			process: (chat: ChatMessage) => {
@@ -34,6 +45,7 @@ router.post('/chat-process', [auth, limiter], async (req, res) => {
 			},
 			systemMessage,
 		})
+		console.log('after reply', result)
 	}
 	catch (error) {
 		res.write(JSON.stringify(error))
