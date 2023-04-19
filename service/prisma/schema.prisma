@@ -1380,6 +1380,9 @@ model lists {
   created_at    DateTime @db.Timestamptz(6)
   updated_at    DateTime @db.Timestamptz(6)
   listable_type String?  @db.VarChar(32)
+  extra         Json?    @default("{}")
+
+  @@index([extra], map: "index_lists_on_extra", type: Gin)
 }
 
 model live_streams {
@@ -1669,9 +1672,11 @@ model mg_messages {
   conversation_id   Int?
   created_at        DateTime? @db.Timestamp(6)
   updated_at        DateTime? @db.Timestamp(6)
+  user_id           Int?
 
   @@index([conversation_id], map: "mg_messages_conversation_id_index")
   @@index([message_id], map: "mg_messages_message_id_index")
+  @@index([user_id], map: "index_mg_messages_on_user_id")
 }
 
 model mg_users {
@@ -2373,7 +2378,7 @@ model sessions {
   id            BigInt    @id @default(autoincrement())
   token         String    @db.VarChar(191)
   user_id       BigInt
-	user   users @relation(fields: [user_id], references: [id])
+  user   users @relation(fields: [user_id], references: [id])
   user_agent    String
   ip            String?   @default("0.0.0.0") @db.Inet
   visit_count   BigInt?   @default(0)
@@ -2463,6 +2468,8 @@ model songs {
   singer_id  Int?
   created_at DateTime @db.Timestamp(6)
   updated_at DateTime @db.Timestamp(6)
+  source_id  String?  @db.VarChar(32)
+  source     Int?     @db.SmallInt
 }
 
 model spider_pages {
@@ -2892,7 +2899,7 @@ model users {
   settings            Json?
   state               Int?      @default(0)
 
-	sessions   sessions[]
+  sessions sessions[]
 
   @@index([domain], map: "idx_26267_index_users_on_domain")
   @@index([email], map: "idx_26267_index_users_on_email_and_password")
@@ -3034,7 +3041,3 @@ model weixin_users {
   @@index([openid], map: "idx_26455_index_weixin_users_on_openid")
   @@index([unionid], map: "idx_26455_index_weixin_users_on_unionid")
 }
-
-
-// introspectionSchemaVersion: NonPrisma
-

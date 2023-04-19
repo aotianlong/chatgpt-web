@@ -26,6 +26,8 @@ const auth = async (req, res, next) => {
 		if (!session) {
 			throw new Error('Error: 无访问权限 | No access rights')
 		} else {
+			req.session.userId = Number(session.user_id)
+			req.session.save()
 			next()
 		}
 	}

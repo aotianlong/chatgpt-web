@@ -1,4 +1,5 @@
 import express from 'express'
+import session from 'express-session'
 import type { RequestProps } from './types'
 import type { ChatMessage } from './chatgpt'
 import { chatConfig, chatReplyProcess, currentModel } from './chatgpt'
@@ -14,6 +15,9 @@ const prisma = new PrismaClient()
 
 app.use(express.static('public'))
 app.use(express.json())
+app.use(session({
+	secret: 'mbm-music-gpt-cookies-secret-with-salt-jfls',
+}))
 
 app.all('*', (_, res, next) => {
 	res.header('Access-Control-Allow-Origin', '*')
@@ -31,6 +35,8 @@ router.post('/chat-process', [auth, limiter], async (req, res) => {
 		const mgMessage = await prisma.mg_messages.create({
 			data: {
 				text: prompt,
+				role: 'user',
+				user_id: req.session.userId,
 				created_at: new Date(),
 				updated_at: new Date(),
 			},
