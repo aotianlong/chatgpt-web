@@ -2373,6 +2373,7 @@ model sessions {
   id            BigInt    @id @default(autoincrement())
   token         String    @db.VarChar(191)
   user_id       BigInt
+	user   users @relation(fields: [user_id], references: [id])
   user_agent    String
   ip            String?   @default("0.0.0.0") @db.Inet
   visit_count   BigInt?   @default(0)
@@ -2891,6 +2892,8 @@ model users {
   settings            Json?
   state               Int?      @default(0)
 
+	sessions   sessions[]
+
   @@index([domain], map: "idx_26267_index_users_on_domain")
   @@index([email], map: "idx_26267_index_users_on_email_and_password")
 }
@@ -3033,5 +3036,5 @@ model weixin_users {
 }
 
 
-// introspectionSchemaVersion: NonPrisma 
+// introspectionSchemaVersion: NonPrisma
 

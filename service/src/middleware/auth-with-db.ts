@@ -6,12 +6,12 @@ const prisma = new PrismaClient()
 const getSession = (req) => {
 	let token = req
 	if (!_.isString(req)) {
-	  const Authorization = req.header('Authorization')
-	  token = Authorization && Authorization.replace('Bearer ', '').trim()
+		const Authorization = req.header('Authorization')
+		token = Authorization && Authorization.replace('Bearer ', '').trim()
 	}
 	console.log(token)
 	if (token) {
-		const session = prisma.sessions.findFirst({ where: { token } })
+		const session = prisma.sessions.findFirst({ where: { token }, include: { user: true } })
 		return session
 	} else {
 		return Promise.resolve(null)

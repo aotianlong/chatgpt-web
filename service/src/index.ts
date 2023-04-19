@@ -26,14 +26,16 @@ router.post('/chat-process', [auth, limiter], async (req, res) => {
 	res.setHeader('Content-type', 'application/octet-stream')
 
 	try {
+		console.log('start chat process')
 		const { prompt, options = {}, systemMessage } = req.body as RequestProps
-		prisma.mg_messages({
+		const mgMessage = await prisma.mg_messages.create({
 			data: {
-				message: prompt,
+				text: prompt,
 				created_at: new Date(),
 				updated_at: new Date(),
 			},
 		})
+		console.log('mgMessage', mgMessage)
 		// 记录 prompt
 		let firstChunk = true
 		const result = await chatReplyProcess({
@@ -48,6 +50,7 @@ router.post('/chat-process', [auth, limiter], async (req, res) => {
 		console.log('after reply', result)
 	}
 	catch (error) {
+		console.log(error)
 		res.write(JSON.stringify(error))
 	}
 	finally {
