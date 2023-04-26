@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { SendMessageOptions } from 'chatgpt'
+import type { ChatMessage, SendMessageOptions } from 'chatgpt'
 import type { RequestOptions } from '../chatgpt/types'
 import { sendResponse } from '../utils'
 const timeoutMs: number = !isNaN(+process.env.TIMEOUT_MS) ? +process.env.TIMEOUT_MS : 30 * 1000
@@ -47,10 +47,56 @@ async function chatReplyProcess(options: RequestOptions) {
     })
 		*/
 
-    const data = response.data
-    global.console.log('data', data)
+    const data = response.data.data
 
-    return sendResponse({ type: 'Success', data })
+    /*
+		{
+			"choices": [
+        {
+            "finishReason": "stop",
+            "index": 0,
+            "message": {
+                "content": "æ¬¢è¿åæ¥ï¼æä»ä¹æå¯ä»¥å¸®æ¨çåï¼",
+                "role": "assistant"
+            }
+        }
+    ],
+    "created": 1682504455,
+    "id": "chatcmpl-79WYZJKi3nVf6D0V9tU4XpW8xCFq7",
+    "model": "gpt-4",
+    "object": "chat.completion",
+    "usage": {
+        "completionTokens": 21,
+        "promptTokens": 10,
+        "totalTokens": 31
+    }
+} */
+
+    // 转换成chatgpt的格式
+    const newMessage: ChatMessage = {
+      role: 'assistant',
+      id: data.id,
+      // parentMessageId: 'da38f295-11af-4232-b5c8-8954ae7a1eb6',
+      text: data.choices[0].message.content, // '晚上好，有什么我可以帮助您的吗？',
+      detail: {
+        id: data.id,
+        object: 'chat.completion',
+        created: data.created,
+        model: data.model,
+        choices: [
+          { delta: {}, index: 0, finish_reason: 'stop' },
+        ],
+      },
+    }
+
+    global.console.log('message', newMessage)
+    const firstMessage = { ...newMessage }
+    firstMessage.detail.object = 'chat.completion.chunk'
+    firstMessage.detail.choices = [{ delta: { role: 'assistant' }, index: 0, finish_reason: null }]
+    process?.(firstMessage)
+    process?.(newMessage)
+
+    return sendResponse({ type: 'Success', data: newMessage })
   }
   catch (error: any) {
     const code = error.statusCode
