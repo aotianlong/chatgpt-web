@@ -7,7 +7,7 @@ declare namespace Chat {
 		error?: boolean
 		loading?: boolean
 		conversationOptions?: ConversationRequest | null
-		requestOptions: { prompt: string; options?: ConversationRequest | null }
+		requestOptions: { model?:string, prompt: string; options?: ConversationRequest | null }
 	}
 
 	interface History {

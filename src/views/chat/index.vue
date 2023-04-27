@@ -3,7 +3,7 @@ import type { Ref } from 'vue'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { NAutoComplete, NButton, NInput, useDialog, useMessage } from 'naive-ui'
+import { NAutoComplete, NButton, NInput, NSelect, useDialog, useMessage } from 'naive-ui'
 import html2canvas from 'html2canvas'
 import { Message } from './components'
 import { useScroll } from './hooks/useScroll'
@@ -42,6 +42,7 @@ const conversationList = computed(() => dataSources.value.filter(item => (!item.
 const prompt = ref<string>('')
 const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
+const model = ref<string>('xy-openai-gpt4-32k')
 
 // 添加PromptStore
 const promptStore = usePromptStore()
@@ -78,7 +79,7 @@ async function onConversation() {
       inversion: true,
       error: false,
       conversationOptions: null,
-      requestOptions: { prompt: message, options: null },
+      requestOptions: { model: model.value, prompt: message, options: null },
     },
   )
   scrollToBottom()
@@ -110,6 +111,7 @@ async function onConversation() {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
+        model: model.value,
         prompt: message,
         options,
         signal: controller.signal,
@@ -462,6 +464,12 @@ onUnmounted(() => {
   if (loading.value)
     controller.abort()
 })
+
+const modelOptions = [
+  { label: 'gpt4', value: 'xy-openai-gpt4' },
+  { label: 'gpt4-32k', value: 'xy-openai-gpt4-32k' },
+  { label: 'gpt35', value: 'xy-openai-gpt35' },
+]
 </script>
 
 <template>
@@ -533,6 +541,9 @@ onUnmounted(() => {
               <SvgIcon icon="ri:chat-history-line" />
             </span>
           </HoverButton>
+          <div class="w-48">
+            <NSelect v-model="model" :options="modelOptions" />
+          </div>
           <NAutoComplete v-model:value="prompt" :options="searchOptions" :render-label="renderOption">
             <template #default="{ handleInput, handleBlur, handleFocus }">
               <NInput
