@@ -102,7 +102,7 @@ async function onConversation() {
       inversion: false,
       error: false,
       conversationOptions: null,
-      requestOptions: { prompt: message, options: { ...options } },
+      requestOptions: { model: model.value, prompt: message, options: { ...options } },
     },
   )
   scrollToBottom()
@@ -135,7 +135,7 @@ async function onConversation() {
                 error: false,
                 loading: false,
                 conversationOptions: { conversationId: data.conversationId, parentMessageId: data.id },
-                requestOptions: { prompt: message, options: { ...options } },
+                requestOptions: { model: model.value, prompt: message, options: { ...options } },
               },
             )
 
