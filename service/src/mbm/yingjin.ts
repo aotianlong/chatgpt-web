@@ -23,7 +23,7 @@ async function chatReplyProcess(options: RequestOptions) {
     const options: SendMessageOptions = { timeoutMs }
 
     const headers = { 'Content-Type': 'application/json;charset=utf-8', 'accessKey': OPENAI_API_KEY }
-    global.console.log('headers', headers)
+    global.console.log('headers', headers, 'model', model)
     const response = await axios.post(
       'https://openai.yingjin.pro/api/visitor/openai/chat',
       {
