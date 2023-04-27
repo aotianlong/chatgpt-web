@@ -14,10 +14,11 @@ const ErrorCodeMessage: Record<string, string> = {
 const OPENAI_API_BASE_URL = process.env.OPENAI_API_BASE_URL
 const OPENAI_API_MODEL = process.env.OPENAI_API_MODEL
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
-const model = 'xy-openai-gpt4-32k'
 
 async function chatReplyProcess(options: RequestOptions) {
   const { message, lastContext, process, systemMessage } = options
+  let { model } = options
+  model ||= 'xy-openai-gpt4-32k'
   try {
     const options: SendMessageOptions = { timeoutMs }
 
