@@ -542,7 +542,7 @@ const modelOptions = [
             </span>
           </HoverButton>
           <div class="w-48">
-            <NSelect v-model="model" :options="modelOptions" />
+            <NSelect v-model:value="model" :options="modelOptions" />
           </div>
           <NAutoComplete v-model:value="prompt" :options="searchOptions" :render-label="renderOption">
             <template #default="{ handleInput, handleBlur, handleFocus }">
