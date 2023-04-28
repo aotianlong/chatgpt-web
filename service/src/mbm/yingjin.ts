@@ -75,7 +75,7 @@ async function chatReplyProcess(options: RequestOptions) {
       role: 'assistant',
       id: data.id,
       // parentMessageId: 'da38f295-11af-4232-b5c8-8954ae7a1eb6',
-      text: data.choices[0].message.content, // '晚上好，有什么我可以帮助您的吗？',
+      text: data.choices?.[0]?.message?.content || '抱歉，网络出现点问题，请重试。', // '晚上好，有什么我可以帮助您的吗？',
       detail: {
         id: data.id,
         object: 'chat.completion',
