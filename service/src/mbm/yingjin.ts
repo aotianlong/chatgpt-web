@@ -88,10 +88,10 @@ async function chatReplyProcess(options: RequestOptions) {
     }
 
     global.console.log('message', newMessage)
-    const firstMessage = { ...newMessage }
-    firstMessage.detail.object = 'chat.completion.chunk'
-    firstMessage.detail.choices = [{ delta: { role: 'assistant' }, index: 0, finish_reason: null }]
-    process?.(firstMessage)
+    // const firstMessage = { ...newMessage }
+    // firstMessage.detail.object = 'chat.completion.chunk'
+    // firstMessage.detail.choices = [{ delta: { role: 'assistant' }, index: 0, finish_reason: null }]
+    // process?.(firstMessage)
     process?.(newMessage)
 
     return sendResponse({ type: 'Success', data: newMessage })
