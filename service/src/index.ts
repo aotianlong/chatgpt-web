@@ -5,7 +5,7 @@ import { chatConfig, currentModel } from './chatgpt'
 import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
-import { chatReplyProcess, queryAccount, sendPhoneCode } from './mbm/yingjin'
+import { chatReplyProcess, getAccessKey, queryAccount, sendPhoneCode } from './mbm/yingjin'
 
 const app = express()
 const router = express.Router()
@@ -22,9 +22,10 @@ app.all('*', (_, res, next) => {
 
 router.post('/chat-process', [auth, limiter], async (req, res) => {
   res.setHeader('Content-type', 'application/octet-stream')
+  const accessKey = getAccessKey(req)
 
   try {
-    const { accessKey, model, prompt, options = {}, systemMessage } = req.body as RequestProps
+    const { model, prompt, options = {}, systemMessage } = req.body as RequestProps
     let firstChunk = true
     await chatReplyProcess({
       accessKey,
@@ -88,10 +89,14 @@ router.post('/sendCode', async (req, res) => {
       throw new Error('手机号码无效 | Phone number is invalid')
 
     const response = await sendPhoneCode(phone)
-    res.send(response)
+    if (response.code === 11000)
+      res.send({ status: 'Success', message: response.msg, data: response.data })
+
+    else
+      res.send({ status: 'Fail', message: response.msg, data: response.data })
   }
   catch (error) {
-    res.send({ status: 'Fail', message: error.message, data: null })
+    res.send({ status: 'Fail', message: error.msg, data: null })
   }
 })
 
@@ -99,11 +104,14 @@ router.post('/checkCode', async (req, res) => {
   try {
     const { phone, code } = req.body as { phone: string; code: string }
     const result = await queryAccount(phone, code)
-    global.console.log(result)
-    res.send(result)
+    globalThis.console.log(result)
+    if (result.code === 11000)
+      res.send({ status: 'Success', message: result.msg, data: result.data })
+    else
+      res.send({ status: 'Fail', message: result.msg, data: result.data })
   }
   catch (error) {
-    res.send({ status: 'Fail', message: error.message, data: null })
+    res.send({ status: 'Fail', message: error.msg, data: null })
   }
 })
 

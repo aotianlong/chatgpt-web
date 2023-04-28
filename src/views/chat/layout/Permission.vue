@@ -1,8 +1,8 @@
 <script setup lang='ts'>
 import { computed, ref } from 'vue'
 import { NButton, NInput, NInputGroup, NModal, useMessage } from 'naive-ui'
-import { fetchVerify, sendCode } from '@/api'
-import { useAuthStore } from '@/store'
+import { checkCode, sendCode } from '@/api'
+import { useAuthStore, useUserStore } from '@/store'
 import Icon403 from '@/icons/403.vue'
 
 interface Props {
@@ -12,40 +12,47 @@ interface Props {
 defineProps<Props>()
 
 const authStore = useAuthStore()
+const userStore = useUserStore()
 
 const ms = useMessage()
 
 const loading = ref(false)
 const token = ref('')
 
+const error = ref(null)
 const formData = ref({
   phone: '',
   code: '',
 })
 
-const disabled = computed(() => !token.value.trim() || loading.value)
+const disabled = computed(() => (!formData.value.phone.trim() && !formData.value.code) || loading.value)
 
 async function handleVerify() {
-  const secretKey = token.value.trim()
-
-  if (!secretKey)
-    return
-
-  try {
-    loading.value = true
-    await fetchVerify(secretKey)
-    authStore.setToken(secretKey)
-    ms.success('success')
-    window.location.reload()
-  }
-  catch (error: any) {
-    ms.error(error.message ?? 'error')
+  loading.value = true
+  error.value = null
+  checkCode(formData.value.phone, formData.value.code).then((res) => {
+    globalThis.console.log(res)
+    authStore.setToken(res.data.accessKey)
+    token.value = res.data.accessKey
+    ms.success('登录成功')
+    // 设置 用户信息
+    userStore.updateUserInfo({
+      name: res.data.name,
+      description: res.data.mobile,
+    })
+    setTimeout(() => {
+      window.location.reload()
+    }, 1000)
+  }).catch((err) => {
+    error.value = err.message
+    ms.error(err.message)
+    globalThis.console.log('error', err)
     authStore.removeToken()
     token.value = ''
-  }
-  finally {
-    loading.value = false
-  }
+  })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 function handlePress(event: KeyboardEvent) {
@@ -58,7 +65,11 @@ function handlePress(event: KeyboardEvent) {
 function doSendCode() {
   const phone = formData.value.phone.trim()
   sendCode(phone).then((res) => {
-    global.console.log(res)
+    globalThis.console.log(res)
+  }).catch((err) => {
+    error.value = err.message
+    ms.error(err.message)
+    globalThis.console.log('error', err)
   })
 }
 </script>

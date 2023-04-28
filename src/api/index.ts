@@ -58,12 +58,21 @@ export function sendCode<T>(phone: string) {
   })
 }
 
-export function queryAccount<T>(phone: string, code: string) {
+export function checkCode<T>(phone: string, code: string) {
   return post<T>({
-    url: '/queryAccount',
+    url: '/checkCode',
     data: {
       phone,
       code,
+    },
+  })
+}
+
+export function accountInfo<T>(accessToken: string) {
+  return post<T>({
+    url: '/accountInfo',
+    data: {
+      accessToken,
     },
   })
 }

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { ChatMessage, SendMessageOptions } from 'chatgpt'
+import type { Request } from 'express'
 import type { RequestOptions } from '../chatgpt/types'
 import { sendResponse } from '../utils'
 const timeoutMs: number = !isNaN(+process.env.TIMEOUT_MS) ? +process.env.TIMEOUT_MS : 30 * 1000
@@ -11,10 +12,6 @@ const ErrorCodeMessage: Record<string, string> = {
   504: '[OpenAI] 网关超时 | Gateway Time-out',
   500: '[OpenAI] 服务器繁忙，请稍后再试 | Internal Server Error',
 }
-const OPENAI_API_BASE_URL = process.env.OPENAI_API_BASE_URL
-const OPENAI_API_MODEL = process.env.OPENAI_API_MODEL
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY
-
 async function chatReplyProcess(options: RequestOptions) {
   const { accessKey, message, lastContext, process, systemMessage } = options
   let { model } = options
@@ -78,7 +75,7 @@ async function chatReplyProcess(options: RequestOptions) {
       role: 'assistant',
       id: data.id,
       // parentMessageId: 'da38f295-11af-4232-b5c8-8954ae7a1eb6',
-      text: data.choices[0].message.content, // '晚上好，有什么我可以帮助您的吗？',
+      text: data.choices?.[0]?.message?.content || '抱歉，网络出现点问题，请重试。', // '晚上好，有什么我可以帮助您的吗？',
       detail: {
         id: data.id,
         object: 'chat.completion',
@@ -91,10 +88,10 @@ async function chatReplyProcess(options: RequestOptions) {
     }
 
     global.console.log('message', newMessage)
-    const firstMessage = { ...newMessage }
-    firstMessage.detail.object = 'chat.completion.chunk'
-    firstMessage.detail.choices = [{ delta: { role: 'assistant' }, index: 0, finish_reason: null }]
-    process?.(firstMessage)
+    // const firstMessage = { ...newMessage }
+    // firstMessage.detail.object = 'chat.completion.chunk'
+    // firstMessage.detail.choices = [{ delta: { role: 'assistant' }, index: 0, finish_reason: null }]
+    // process?.(firstMessage)
     process?.(newMessage)
 
     return sendResponse({ type: 'Success', data: newMessage })
@@ -110,7 +107,7 @@ async function chatReplyProcess(options: RequestOptions) {
 
 function sendPhoneCode(phone: string) {
   return axios.post(
-    'https://openai.yingjin.pro/api/visitor/doPhoneCode',
+    'https://openai.yingjin.pro/api/visitor/doSendCode',
     {
       phone,
     },
@@ -139,4 +136,24 @@ function queryAccount(phone: string, code: string) {
   })
 }
 
-export { chatReplyProcess, sendPhoneCode }
+function accountInfo(accessKey: string) {
+  return axios.post(
+    'https://openai.yingjin.pro/api/visitor/queryInfo',
+    {
+      accessKey,
+    },
+    { headers: { 'Content-Type': 'application/json;charset=utf-8' } },
+  ).then((response) => {
+    global.console.log(response)
+    return response.data
+  }).catch((error) => {
+    global.console.error(error)
+  })
+}
+
+function getAccessKey(req: Request) {
+  const Authorization = req.header('Authorization')
+  return Authorization && Authorization.replace('Bearer ', '').trim()
+}
+
+export { chatReplyProcess, sendPhoneCode, queryAccount, getAccessKey, accountInfo }
