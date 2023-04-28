@@ -85,7 +85,7 @@ function doSendCode() {
             发送
           </NButton>
         </NInputGroup>
-        <NInput v-model:value="formData.code" placeholder="验证码" />
+        <NInput v-model:value="formData.code" placeholder="验证码" @keypress="handlePress" />
         <NButton
           block
           type="primary"
