@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { ChatMessage, SendMessageOptions } from 'chatgpt'
+import type { Request } from 'express'
 import type { RequestOptions } from '../chatgpt/types'
 import { sendResponse } from '../utils'
 const timeoutMs: number = !isNaN(+process.env.TIMEOUT_MS) ? +process.env.TIMEOUT_MS : 30 * 1000
@@ -135,4 +136,9 @@ function queryAccount(phone: string, code: string) {
   })
 }
 
-export { chatReplyProcess, sendPhoneCode, queryAccount }
+function getAccessKey(req: Request) {
+  const Authorization = req.header('Authorization')
+  return Authorization && Authorization.replace('Bearer ', '').trim()
+}
+
+export { chatReplyProcess, sendPhoneCode, queryAccount, getAccessKey }

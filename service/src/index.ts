@@ -5,7 +5,7 @@ import { chatConfig, currentModel } from './chatgpt'
 import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
-import { chatReplyProcess, queryAccount, sendPhoneCode } from './mbm/yingjin'
+import { chatReplyProcess, getAccessKey, queryAccount, sendPhoneCode } from './mbm/yingjin'
 
 const app = express()
 const router = express.Router()
@@ -22,9 +22,10 @@ app.all('*', (_, res, next) => {
 
 router.post('/chat-process', [auth, limiter], async (req, res) => {
   res.setHeader('Content-type', 'application/octet-stream')
+  const accessKey = getAccessKey(req)
 
   try {
-    const { accessKey, model, prompt, options = {}, systemMessage } = req.body as RequestProps
+    const { model, prompt, options = {}, systemMessage } = req.body as RequestProps
     let firstChunk = true
     await chatReplyProcess({
       accessKey,

@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { NButton, NInput, NInputGroup, NModal, useMessage } from 'naive-ui'
 import { checkCode, sendCode } from '@/api'
-import { useAuthStore } from '@/store'
+import { useAuthStore, useUserStore } from '@/store'
 import Icon403 from '@/icons/403.vue'
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 defineProps<Props>()
 
 const authStore = useAuthStore()
+const userStore = useUserStore()
 
 const ms = useMessage()
 
@@ -31,7 +32,17 @@ async function handleVerify() {
   error.value = null
   checkCode(formData.value.phone, formData.value.code).then((res) => {
     globalThis.console.log(res)
-    authStore.setToken(res.accessKey)
+    authStore.setToken(res.data.accessKey)
+    token.value = res.data.accessKey
+    ms.success('登录成功')
+    // 设置 用户信息
+    userStore.updateUserInfo({
+      name: res.data.user,
+      description: res.data.phone,
+    })
+    setTimeout(() => {
+      window.location.reload()
+    }, 1000)
   }).catch((err) => {
     error.value = err.message
     ms.error(err.message)
