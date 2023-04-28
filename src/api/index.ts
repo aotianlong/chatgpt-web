@@ -67,3 +67,12 @@ export function checkCode<T>(phone: string, code: string) {
     },
   })
 }
+
+export function accountInfo<T>(accessToken: string) {
+  return post<T>({
+    url: '/accountInfo',
+    data: {
+      accessToken,
+    },
+  })
+}

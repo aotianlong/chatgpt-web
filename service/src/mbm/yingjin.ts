@@ -136,9 +136,24 @@ function queryAccount(phone: string, code: string) {
   })
 }
 
+function accountInfo(accessKey: string) {
+  return axios.post(
+    'https://openai.yingjin.pro/api/visitor/queryInfo',
+    {
+      accessKey,
+    },
+    { headers: { 'Content-Type': 'application/json;charset=utf-8' } },
+  ).then((response) => {
+    global.console.log(response)
+    return response.data
+  }).catch((error) => {
+    global.console.error(error)
+  })
+}
+
 function getAccessKey(req: Request) {
   const Authorization = req.header('Authorization')
   return Authorization && Authorization.replace('Bearer ', '').trim()
 }
 
-export { chatReplyProcess, sendPhoneCode, queryAccount, getAccessKey }
+export { chatReplyProcess, sendPhoneCode, queryAccount, getAccessKey, accountInfo }
