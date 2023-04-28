@@ -11,10 +11,6 @@ const ErrorCodeMessage: Record<string, string> = {
   504: '[OpenAI] 网关超时 | Gateway Time-out',
   500: '[OpenAI] 服务器繁忙，请稍后再试 | Internal Server Error',
 }
-const OPENAI_API_BASE_URL = process.env.OPENAI_API_BASE_URL
-const OPENAI_API_MODEL = process.env.OPENAI_API_MODEL
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY
-
 async function chatReplyProcess(options: RequestOptions) {
   const { accessKey, message, lastContext, process, systemMessage } = options
   let { model } = options
@@ -110,7 +106,7 @@ async function chatReplyProcess(options: RequestOptions) {
 
 function sendPhoneCode(phone: string) {
   return axios.post(
-    'https://openai.yingjin.pro/api/visitor/doPhoneCode',
+    'https://openai.yingjin.pro/api/visitor/doSendCode',
     {
       phone,
     },
@@ -139,4 +135,4 @@ function queryAccount(phone: string, code: string) {
   })
 }
 
-export { chatReplyProcess, sendPhoneCode }
+export { chatReplyProcess, sendPhoneCode, queryAccount }
