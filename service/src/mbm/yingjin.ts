@@ -48,7 +48,7 @@ async function chatReplyProcess(options: RequestOptions) {
     const data = response.data.data
     if (response.data?.code ===  12002) {
     	globalThis.console.log(response.data)
-    	return sendResponse({ type: 'Unauthorized', message: 'login required' })
+    	// return sendResponse({ type: 'Unauthorized', message: 'login required' })
     }
 
     /*
