@@ -5,7 +5,7 @@ import { chatConfig, currentModel } from './chatgpt'
 import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
-import { chatReplyProcess } from './mbm/yingjin'
+import { chatReplyProcess, queryAccount, sendPhoneCode } from './mbm/yingjin'
 
 const app = express()
 const router = express.Router()
@@ -24,9 +24,10 @@ router.post('/chat-process', [auth, limiter], async (req, res) => {
   res.setHeader('Content-type', 'application/octet-stream')
 
   try {
-    const { model, prompt, options = {}, systemMessage } = req.body as RequestProps
+    const { accessKey, model, prompt, options = {}, systemMessage } = req.body as RequestProps
     let firstChunk = true
     await chatReplyProcess({
+      accessKey,
       model,
       message: prompt,
       lastContext: options,
@@ -57,9 +58,7 @@ router.post('/config', auth, async (req, res) => {
 
 router.post('/session', async (req, res) => {
   try {
-    const AUTH_SECRET_KEY = process.env.AUTH_SECRET_KEY
-    const hasAuth = isNotEmptyString(AUTH_SECRET_KEY)
-    res.send({ status: 'Success', message: '', data: { auth: hasAuth, model: currentModel() } })
+    res.send({ status: 'Success', message: '', data: { auth: true, model: currentModel() } })
   }
   catch (error) {
     res.send({ status: 'Fail', message: error.message, data: null })
@@ -76,6 +75,32 @@ router.post('/verify', async (req, res) => {
       throw new Error('密钥无效 | Secret key is invalid')
 
     res.send({ status: 'Success', message: 'Verify successfully', data: null })
+  }
+  catch (error) {
+    res.send({ status: 'Fail', message: error.message, data: null })
+  }
+})
+
+router.post('/sendCode', async (req, res) => {
+  try {
+    const { phone } = req.body as { phone: string }
+    if (!phone || !isNotEmptyString(phone))
+      throw new Error('手机号码无效 | Phone number is invalid')
+
+    const response = await sendPhoneCode(phone)
+    res.send(response)
+  }
+  catch (error) {
+    res.send({ status: 'Fail', message: error.message, data: null })
+  }
+})
+
+router.post('/checkCode', async (req, res) => {
+  try {
+    const { phone, code } = req.body as { phone: string; code: string }
+    const result = await queryAccount(phone, code)
+    global.console.log(result)
+    res.send(result)
   }
   catch (error) {
     res.send({ status: 'Fail', message: error.message, data: null })

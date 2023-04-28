@@ -16,13 +16,13 @@ const OPENAI_API_MODEL = process.env.OPENAI_API_MODEL
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
 
 async function chatReplyProcess(options: RequestOptions) {
-  const { message, lastContext, process, systemMessage } = options
+  const { accessKey, message, lastContext, process, systemMessage } = options
   let { model } = options
   model ||= 'xy-openai-gpt4-32k'
   try {
     const options: SendMessageOptions = { timeoutMs }
 
-    const headers = { 'Content-Type': 'application/json;charset=utf-8', 'accessKey': OPENAI_API_KEY }
+    const headers = { 'Content-Type': 'application/json;charset=utf-8', 'accessKey': accessKey }
     global.console.log('headers', headers, 'model', model)
     const response = await axios.post(
       'https://openai.yingjin.pro/api/visitor/openai/chat',
@@ -108,4 +108,35 @@ async function chatReplyProcess(options: RequestOptions) {
   }
 }
 
-export { chatReplyProcess }
+function sendPhoneCode(phone: string) {
+  return axios.post(
+    'https://openai.yingjin.pro/api/visitor/doPhoneCode',
+    {
+      phone,
+    },
+    { headers: { 'Content-Type': 'application/json;charset=utf-8' } },
+  ).then((response) => {
+    global.console.log(response)
+    return response.data
+  }).catch((error) => {
+    global.console.error(error)
+  })
+}
+
+function queryAccount(phone: string, code: string) {
+  return axios.post(
+    'https://openai.yingjin.pro/api/visitor/queryAccount',
+    {
+      phone,
+      code,
+    },
+    { headers: { 'Content-Type': 'application/json;charset=utf-8' } },
+  ).then((response) => {
+    global.console.log(response)
+    return response.data
+  }).catch((error) => {
+    global.console.error(error)
+  })
+}
+
+export { chatReplyProcess, sendPhoneCode }

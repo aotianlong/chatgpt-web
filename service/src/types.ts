@@ -1,6 +1,7 @@
 import type { FetchFn } from 'chatgpt'
 
 export interface RequestProps {
+  accessKey: string
   model?: string
   prompt: string
   options?: ChatContext
