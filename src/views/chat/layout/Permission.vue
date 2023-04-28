@@ -1,7 +1,7 @@
 <script setup lang='ts'>
 import { computed, ref } from 'vue'
-import { NButton, NInput, NModal, useMessage } from 'naive-ui'
-import { fetchVerify } from '@/api'
+import { NButton, NInput, NInputGroup, NModal, useMessage } from 'naive-ui'
+import { fetchVerify, sendCode } from '@/api'
 import { useAuthStore } from '@/store'
 import Icon403 from '@/icons/403.vue'
 
@@ -17,6 +17,11 @@ const ms = useMessage()
 
 const loading = ref(false)
 const token = ref('')
+
+const formData = ref({
+  phone: '',
+  code: '',
+})
 
 const disabled = computed(() => !token.value.trim() || loading.value)
 
@@ -49,6 +54,13 @@ function handlePress(event: KeyboardEvent) {
     handleVerify()
   }
 }
+
+function doSendCode() {
+  const phone = formData.value.phone.trim()
+  sendCode(phone).then((res) => {
+    global.console.log(res)
+  })
+}
 </script>
 
 <template>
@@ -64,7 +76,16 @@ function handlePress(event: KeyboardEvent) {
           </p>
           <Icon403 class="w-[200px] m-auto" />
         </header>
+        <!--
         <NInput v-model:value="token" type="password" placeholder="" @keypress="handlePress" />
+				-->
+        <NInputGroup>
+          <NInput v-model:value="formData.phone" placeholder="手机号" />
+          <NButton @click="doSendCode">
+            发送
+          </NButton>
+        </NInputGroup>
+        <NInput v-model:value="formData.code" placeholder="验证码" />
         <NButton
           block
           type="primary"

@@ -50,3 +50,20 @@ export function fetchVerify<T>(token: string) {
     data: { token },
   })
 }
+
+export function sendCode<T>(phone: string) {
+  return post<T>({
+    url: '/sendCode',
+    data: { phone },
+  })
+}
+
+export function queryAccount<T>(phone: string, code: string) {
+  return post<T>({
+    url: '/queryAccount',
+    data: {
+      phone,
+      code,
+    },
+  })
+}
