@@ -37,8 +37,8 @@ async function handleVerify() {
     ms.success('登录成功')
     // 设置 用户信息
     userStore.updateUserInfo({
-      name: res.data.user,
-      description: res.data.phone,
+      name: res.data.name,
+      description: res.data.mobile,
     })
     setTimeout(() => {
       window.location.reload()
