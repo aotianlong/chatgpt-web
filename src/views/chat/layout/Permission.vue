@@ -30,7 +30,7 @@ const disabled = computed(() => (!formData.value.phone.trim() && !formData.value
 async function handleVerify() {
   loading.value = true
   error.value = null
-  checkCode(formData.value.phone, formData.value.code).then((res) => {
+  checkCode(formData.value.phone, formData.value.code).then((res: any) => {
     globalThis.console.log(res)
     authStore.setToken(res.data.accessKey)
     token.value = res.data.accessKey
@@ -96,7 +96,7 @@ function doSendCode() {
             发送
           </NButton>
         </NInputGroup>
-        <NInput v-model:value="formData.code" placeholder="验证码" />
+        <NInput v-model:value="formData.code" placeholder="验证码" @keypress="handlePress" />
         <NButton
           block
           type="primary"
