@@ -18,6 +18,15 @@ const ms = useMessage()
 
 const loading = ref(false)
 const token = ref('')
+const countDown = ref(0)
+const startCountDown = () => {
+  countDown.value = 60
+  const timer = setInterval(() => {
+    countDown.value -= 1
+    if (countDown.value <= 0)
+      clearInterval(timer)
+  }, 1000)
+}
 
 const error = ref(null)
 const formData = ref({
@@ -66,6 +75,8 @@ function doSendCode() {
   const phone = formData.value.phone.trim()
   sendCode(phone).then((res) => {
     globalThis.console.log(res)
+    startCountDown()
+    ms.success('发送成功')
   }).catch((err) => {
     error.value = err.message
     ms.error(err.message)
@@ -92,8 +103,9 @@ function doSendCode() {
 				-->
         <NInputGroup>
           <NInput v-model:value="formData.phone" placeholder="手机号" />
-          <NButton @click="doSendCode">
-            发送
+          <NButton :disabled="!!countDown" type="primary" @click="doSendCode">
+            <span v-if="!countDown">发送</span>
+            <span v-else>{{ countDown }}</span>
           </NButton>
         </NInputGroup>
         <NInput v-model:value="formData.code" placeholder="验证码" @keypress="handlePress" />
