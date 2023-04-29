@@ -21,11 +21,11 @@ const accountModalVisible = ref(false)
 const loading = ref(false)
 
 const fieldNames = {
-  createTime: '创建时间',
-  mobile: '手机号',
   name: '姓名',
-  requestCount: '请求次数',
+  mobile: '手机号',
   remainAmount: '剩余金额',
+  requestCount: '请求次数',
+  createTime: '创建时间',
 }
 
 const account = ref<Partial<typeof fieldNames>>({})
