@@ -3,7 +3,9 @@ import { defineAsyncComponent, ref } from 'vue'
 import { HoverButton, SvgIcon, UserAvatar } from '@/components/common'
 
 const Setting = defineAsyncComponent(() => import('@/components/common/Setting/index.vue'))
+const AccountInfo = defineAsyncComponent(() => import('@/views/mbm/accountInfo.vue'))
 
+const accountModalVisible = ref(false)
 const show = ref(false)
 </script>
 
@@ -13,7 +15,7 @@ const show = ref(false)
       联系客服: <a href="tel://4008316028">4008316028</a>
     </div>
     <div class="flex items-center justify-between min-w-0 px-4 overflow-hidden">
-      <div class="flex-1 flex-shrink-0 overflow-hidden">
+      <div class="flex-1 flex-shrink-0 overflow-hidden cursor-pointer" @click="accountModalVisible = true">
         <UserAvatar />
       </div>
 
@@ -25,6 +27,7 @@ const show = ref(false)
       </HoverButton>
 
       <Setting v-if="show" v-model:visible="show" />
+      <AccountInfo v-model:visible="accountModalVisible" />
     </div>
   </footer>
 </template>
