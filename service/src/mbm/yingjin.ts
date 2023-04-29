@@ -46,9 +46,14 @@ async function chatReplyProcess(options: RequestOptions) {
 		*/
 
     const data = response.data.data
-    if (response.data?.code ===  12002) {
+    if (response.data?.code === 12002) {
     	globalThis.console.log(response.data)
     	return sendResponse({ type: 'Unauthorized', message: 'login required' })
+    }
+
+    if (response.data?.code === 12008) {
+      globalThis.console.log(response.data)
+      return sendResponse({ type: 'Fail', message: '余额不足' })
     }
 
     /*
