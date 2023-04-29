@@ -50,12 +50,10 @@ const getData = () => {
     loading.value = false
   })
 }
-
-getData()
 </script>
 
 <template>
-  <NModal v-model:show="show" title="我的账户" :auto-focus="false" preset="card" style="width: 95%; max-width: 640px">
+  <NModal v-model:show="show" title="我的账户" :auto-focus="false" preset="card" style="width: 95%; max-width: 640px" @after-enter="getData">
     <NSpin :spinning="loading">
       <div v-for="(key, value) in fieldNames" :key="key" class="flex items-center space-x-4 my-2">
         <span class="flex-shrink-0 w-[200px]">{{ key }}</span>
