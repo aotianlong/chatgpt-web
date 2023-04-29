@@ -214,19 +214,19 @@ Current date: ${currentDate}`;
 				const accessKey = opts.accessKey || this._apiKey
         const headers = {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessKey}`,
+          // Authorization: `Bearer ${accessKey}`,
 	  			accessKey: accessKey
         };
         const body = {
-          max_tokens: maxTokens,
-          ...this._completionParams,
-          ...completionParams,
+          // max_tokens: maxTokens,
+          // ...this._completionParams,
+          // ...completionParams,
 					model: opts.model,
           messages,
-          stream
+          stream,
         };
         if (this._debug) {
-          console.log(`sendMessage (${numTokens} tokens)`, body, url, headers);
+          console.log(`sendMessage (${numTokens} tokens)`, 'body', body, 'url', url, 'headers', headers);
         }
         if (stream) {
           fetchSSE(
@@ -267,6 +267,7 @@ Current date: ${currentDate}`;
             this._fetch
           ).catch(reject);
         } else {
+					console.log('steam false')
           try {
             const res = await this._fetch(url, {
               method: "POST",
@@ -341,18 +342,20 @@ Current date: ${currentDate}`;
     const assistantLabel = ASSISTANT_LABEL_DEFAULT;
     const maxNumTokens = this._maxModelTokens - this._maxResponseTokens;
     let messages = [];
+		/*
     if (systemMessage) {
       messages.push({
         role: "system",
         content: systemMessage
       });
     }
+		*/
     const systemMessageOffset = messages.length;
     let nextMessages = text ? messages.concat([
       {
         role: "user",
         content: text,
-        name: opts.name
+        // name: opts.name
       }
     ]) : messages;
     let numTokens = 0;

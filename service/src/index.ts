@@ -1,6 +1,5 @@
 import express from 'express'
 import type { RequestProps } from './types'
-import type { ChatMessage } from './chatgpt'
 import { chatConfig, chatReplyProcess, currentModel } from './chatgpt'
 import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
