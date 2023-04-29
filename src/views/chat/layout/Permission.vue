@@ -27,6 +27,7 @@ const startCountDown = () => {
       clearInterval(timer)
   }, 1000)
 }
+const sending = ref(false)
 
 const error = ref(null)
 const formData = ref({
@@ -73,6 +74,7 @@ function handlePress(event: KeyboardEvent) {
 
 function doSendCode() {
   const phone = formData.value.phone.trim()
+  sending.value = true
   sendCode(phone).then((res) => {
     globalThis.console.log(res)
     startCountDown()
@@ -81,6 +83,8 @@ function doSendCode() {
     error.value = err.message
     ms.error(err.message)
     globalThis.console.log('error', err)
+  }).finally(() => {
+    sending.value = false
   })
 }
 </script>
@@ -103,7 +107,7 @@ function doSendCode() {
 				-->
         <NInputGroup>
           <NInput v-model:value="formData.phone" placeholder="手机号" />
-          <NButton :disabled="!!countDown" type="primary" @click="doSendCode">
+          <NButton :loading="sending" :disabled="!!countDown || sending" type="primary" @click="doSendCode">
             <span v-if="!countDown">发送</span>
             <span v-else>{{ countDown }}</span>
           </NButton>
