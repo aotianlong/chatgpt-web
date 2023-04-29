@@ -1,11 +1,11 @@
 import express from 'express'
 import type { RequestProps } from './types'
 import type { ChatMessage } from './chatgpt'
-import { chatConfig, currentModel } from './chatgpt'
+import { chatConfig, chatReplyProcess, currentModel } from './chatgpt'
 import { auth } from './middleware/auth'
 import { limiter } from './middleware/limiter'
 import { isNotEmptyString } from './utils/is'
-import { chatReplyProcess, getAccessKey, queryAccount, sendPhoneCode } from './mbm/yingjin'
+import { accountInfo, getAccessKey, queryAccount, sendPhoneCode } from './mbm/yingjin'
 
 const app = express()
 const router = express.Router()
@@ -105,6 +105,20 @@ router.post('/checkCode', async (req, res) => {
     const { phone, code } = req.body as { phone: string; code: string }
     const result = await queryAccount(phone, code)
     globalThis.console.log(result)
+    if (result.code === 11000)
+      res.send({ status: 'Success', message: result.msg, data: result.data })
+    else
+      res.send({ status: 'Fail', message: result.msg, data: result.data })
+  }
+  catch (error) {
+    res.send({ status: 'Fail', message: error.msg, data: null })
+  }
+})
+
+router.post('/accountInfo', async (req, res) => {
+  try {
+    const { accessKey } = req.body as { accessKey: string }
+    const result = await accountInfo(accessKey)
     if (result.code === 11000)
       res.send({ status: 'Success', message: result.msg, data: result.data })
     else

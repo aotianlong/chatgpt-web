@@ -1,11 +1,11 @@
 import * as dotenv from 'dotenv'
 import 'isomorphic-fetch'
 import type { ChatGPTAPIOptions, ChatMessage, SendMessageOptions } from 'chatgpt'
-import { ChatGPTAPI, ChatGPTUnofficialProxyAPI } from 'chatgpt'
 import { SocksProxyAgent } from 'socks-proxy-agent'
 import httpsProxyAgent from 'https-proxy-agent'
 import fetch from 'node-fetch'
 import axios from 'axios'
+import { ChatGPTAPI, ChatGPTUnofficialProxyAPI } from '../vendor/chatgpt/build/index'
 import { sendResponse } from '../utils'
 import { isNotEmptyString } from '../utils/is'
 import type { ApiModel, ChatContext, ChatGPTUnofficialProxyAPIOptions, ModelConfig } from '../types'
@@ -88,7 +88,8 @@ let api: ChatGPTAPI | ChatGPTUnofficialProxyAPI
 })()
 
 async function chatReplyProcess(options: RequestOptions) {
-  const { message, lastContext, process, systemMessage } = options
+  global.console.log('chatReplayProcess', options)
+  const { model, accessKey, message, lastContext, process, systemMessage } = options
   try {
     let options: SendMessageOptions = { timeoutMs }
 
@@ -106,6 +107,8 @@ async function chatReplyProcess(options: RequestOptions) {
 
     const response = await api.sendMessage(message, {
       ...options,
+      accessKey,
+      model,
       onProgress: (partialResponse) => {
         process?.(partialResponse)
       },
