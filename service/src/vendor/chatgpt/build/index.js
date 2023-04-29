@@ -235,9 +235,10 @@ Current date: ${currentDate}`;
               method: "POST",
               headers,
               body: JSON.stringify(body),
-              signal: abortSignal,
+              // signal: abortSignal,
               onMessage: (data) => {
                 var _a2;
+		      console.log(data)
                 if (data === "[DONE]") {
                   result.text = result.text.trim();
                   return resolve(result);
@@ -249,6 +250,13 @@ Current date: ${currentDate}`;
                   }
                   if ((_a2 = response == null ? void 0 : response.choices) == null ? void 0 : _a2.length) {
                     const delta = response.choices[0].delta;
+                    // mbm
+                    const finishReason = response.choices[0].finish_reason;
+                    if (finishReason === "length" || finishReason === 'stop') {
+                      result.text = result.text.trim();
+                      return resolve(result);
+                    }
+                    // end
                     result.delta = delta.content;
                     if (delta == null ? void 0 : delta.content)
                       result.text += delta.content;
