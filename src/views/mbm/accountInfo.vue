@@ -20,7 +20,7 @@ const emit = defineEmits<Emit>()
 
 const loading = ref(false)
 
-const account = ref<Partial<typeof fieldNames>>({})
+const account = ref({})
 
 const authStore = useAuthStore()
 
