@@ -16,8 +16,6 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<Emit>()
 
-const accountModalVisible = ref(false)
-
 const loading = ref(false)
 
 const fieldNames = {
