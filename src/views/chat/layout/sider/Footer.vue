@@ -14,6 +14,9 @@ const show = ref(false)
     <div class="my-2 flex-1 text-center">
       联系客服: <a href="tel://4008316028">4008316028</a>
     </div>
+    <div class="px-4 pb-2">
+      <img src="/qrcode.jpg">
+    </div>
     <div class="flex items-center justify-between min-w-0 px-4 overflow-hidden">
       <div class="flex-1 flex-shrink-0 overflow-hidden cursor-pointer" @click="accountModalVisible = true">
         <UserAvatar />
