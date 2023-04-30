@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { NButton, NCard, NForm, NFormItem, NInput } from 'naive-ui'
 import AccountInfo from './accountInfo.vue'
@@ -9,7 +9,7 @@ const formData = ref({
 
 const account = ref()
 const loading = ref(false)
-const error = ref(null)
+const error = ref<any>(null)
 
 const doQueryAccout = async () => {
   try {
