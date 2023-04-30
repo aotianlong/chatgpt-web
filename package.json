@@ -22,6 +22,7 @@
     "common:cleanup": "rimraf node_modules && rimraf pnpm-lock.yaml",
     "common:prepare": "husky install",
     "deploy": "rsync -avz dist/* app@mbmgpt.com:apps/musicgpt-chat/.",
+    "deploy2": "rsync -avz dist/* app@mbmzone:apps/chat.mbmzone.com/.",
     "push": "git push app@mbmgpt.com:source/chatgpt-web"
   },
   "dependencies": {

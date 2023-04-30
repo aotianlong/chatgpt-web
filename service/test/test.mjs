@@ -11,6 +11,8 @@ const body = {
 	messages: [{role: 'user', content: '准备好了吗？'}]
 }
 
+console.log(url, headers, body)
+
 const response =  fetch(
     url,
     {
@@ -23,6 +25,4 @@ const response =  fetch(
       },
       responseType: 'stream',
     }
-  ).then((response) => {
-	  console.log(response.body)
-  })
+  )
