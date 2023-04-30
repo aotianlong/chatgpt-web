@@ -1,6 +1,6 @@
 import type { AxiosProgressEvent, GenericAbortSignal } from 'axios'
 import { post } from '@/utils/request'
-import { useSettingStore } from '@/store'
+import { useAuthStore, useSettingStore } from '@/store'
 
 export function fetchChatAPI<T = any>(
   prompt: string,
@@ -20,7 +20,7 @@ export function fetchChatConfig<T = any>() {
   })
 }
 
-export function fetchChatAPIProcess<T = any>(
+export function fetchChatAPIProcessWithLocalServer<T = any>(
   params: {
     model?: string
     prompt: string
@@ -34,6 +34,28 @@ export function fetchChatAPIProcess<T = any>(
     url: '/chat-process',
     data: { model: params.model, prompt: params.prompt, options: params.options, systemMessage: settingStore.systemMessage },
     signal: params.signal,
+    onDownloadProgress: params.onDownloadProgress,
+  })
+}
+
+export const fetchChatAPIProcess = fetchChatAPIProcessWithLocalServer
+
+export function fetchChatAPIProcessWithYingjin<T = any>(
+  params: {
+    model?: string
+    prompt: string
+    options?: { conversationId?: string; parentMessageId?: string }
+    signal?: GenericAbortSignal
+    onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void },
+) {
+  const settingStore = useSettingStore()
+  const authStore = useAuthStore()
+
+  return post<T>({
+    url: 'https://openai.yingjin.pro/api/visitor/openai/chat',
+    data: { stream: true, model: params.model, messages: [{ role: 'user', content: params.prompt }] },
+    signal: params.signal,
+    headers: { accessKey: authStore.token },
     onDownloadProgress: params.onDownloadProgress,
   })
 }

@@ -235,10 +235,10 @@ Current date: ${currentDate}`;
               method: "POST",
               headers,
               body: JSON.stringify(body),
-              // signal: abortSignal,
+              ignal: abortSignal,
               onMessage: (data) => {
                 var _a2;
-		      console.log(data)
+		      			console.log('onMessage', data)
                 if (data === "[DONE]") {
                   result.text = result.text.trim();
                   return resolve(result);
@@ -264,6 +264,7 @@ Current date: ${currentDate}`;
                     if (delta.role) {
                       result.role = delta.role;
                     }
+										console.log('onProgress', result)
                     onProgress == null ? void 0 : onProgress(result);
                   }
                 } catch (err) {
