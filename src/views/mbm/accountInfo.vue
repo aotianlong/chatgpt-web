@@ -6,6 +6,7 @@ import { accountInfo } from '@/api'
 
 interface Props {
   visible: boolean
+  accessKey?: string
 }
 
 interface Emit {
@@ -40,7 +41,7 @@ const show = computed({
 })
 
 const getData = () => {
-  const accessKey = authStore.token
+  const accessKey = props.accessKey || authStore.token
   loading.value = true
   accountInfo(accessKey || '').then((res) => {
     account.value = res.data as any
