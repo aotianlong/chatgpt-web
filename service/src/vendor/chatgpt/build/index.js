@@ -108,8 +108,8 @@ var ChatGPTAPI = class {
       messageStore,
       completionParams,
       systemMessage,
-      maxModelTokens = 4e3,
-      maxResponseTokens = 1e3,
+      maxModelTokens = 132e3,
+      maxResponseTokens = 32e3,
       getMessageById,
       upsertMessage,
       fetch: fetch2 = fetch
@@ -206,7 +206,7 @@ Current date: ${currentDate}`;
       parentMessageId: messageId,
       text: ""
     };
-		console.log('--------opts', opts, accessKey)
+		console.log('--------opts', text, opts, accessKey)
     const responseP = new Promise(
       async (resolve, reject) => {
         var _a, _b;
