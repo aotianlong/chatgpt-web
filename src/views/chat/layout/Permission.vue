@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import { computed, ref } from 'vue'
-import { NButton, NInput, NInputGroup, NModal, useMessage } from 'naive-ui'
+import { NInputNumber, NButton, NInput, NInputGroup, NModal, useMessage } from 'naive-ui'
 import { checkCode, sendCode } from '@/api'
 import { useAuthStore, useUserStore } from '@/store'
 import Icon403 from '@/icons/403.vue'
@@ -32,7 +32,7 @@ const sending = ref(false)
 const error = ref(null)
 const formData = ref({
   phone: '',
-  code: '',
+  code: null,
 })
 
 const disabled = computed(() => (!formData.value.phone.trim() && !formData.value.code) || loading.value)
@@ -112,7 +112,7 @@ function doSendCode() {
             <span v-else>{{ countDown }}</span>
           </NButton>
         </NInputGroup>
-        <NInput v-model:value="formData.code" placeholder="验证码" @keypress="handlePress" />
+        <NInputNumber  :show-button="false" v-model:value="formData.code" placeholder="验证码" @keypress="handlePress" :max="1000000" maxlength="6" />
         <NButton
           block
           type="primary"

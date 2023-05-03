@@ -26,3 +26,7 @@ const response =  fetch(
       responseType: 'stream',
     }
   )
+
+response.then((r) => {
+	console.log(r.body.json())
+})
