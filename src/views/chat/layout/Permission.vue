@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import { computed, ref } from 'vue'
-import { NInputNumber, NButton, NInput, NInputGroup, NModal, useMessage } from 'naive-ui'
+import { NButton, NInput, NInputGroup, NModal, useMessage } from 'naive-ui'
 import { checkCode, sendCode } from '@/api'
 import { useAuthStore, useUserStore } from '@/store'
 import Icon403 from '@/icons/403.vue'
@@ -112,7 +112,7 @@ function doSendCode() {
             <span v-else>{{ countDown }}</span>
           </NButton>
         </NInputGroup>
-        <NInputNumber  :show-button="false" v-model:value="formData.code" placeholder="验证码" @keypress="handlePress" :max="1000000" maxlength="6" />
+        <NInput  :show-button="false" v-model:value="formData.code" placeholder="验证码" @keypress="handlePress" maxlength="6" />
         <NButton
           block
           type="primary"
