@@ -32,7 +32,7 @@ const sending = ref(false)
 const error = ref(null)
 const formData = ref({
   phone: '',
-  code: null,
+  code: '',
 })
 
 const disabled = computed(() => (!formData.value.phone.trim() && !formData.value.code) || loading.value)
