@@ -33,7 +33,13 @@ export function fetchChatAPIProcess<T = any>(
 
   let data: Record<string, any> = {
     model: params.model,
-    prompt: params.prompt,
+    // prompt: params.prompt,
+		messages: [
+			{
+				role: 'user',
+				content: params.prompt,
+			}
+		],
     options: params.options,
   }
 
@@ -43,14 +49,38 @@ export function fetchChatAPIProcess<T = any>(
       systemMessage: settingStore.systemMessage,
       temperature: settingStore.temperature,
       top_p: settingStore.top_p,
+			stream: true,
     }
   }
 
   return post<T>({
-    url: '/chat-process',
+    // url: '/chat-process',
+		url: 'https://openai.yingjin.pro/v1/chat/completions',
     data,
     signal: params.signal,
-    onDownloadProgress: params.onDownloadProgress,
+    onDownloadProgress: (progress) => {
+			let text = ''
+		  let { response } = progress.event.currentTarget
+			response = response.replace(/data: /g, '').replace(/\n\n/g, '\n').replace('[DONE]', '')
+			console.log('response', response)
+			response = response.split(/\n/).map((item: string) => {
+				console.log('item', item, 'text', text)
+				if (item === '') return item
+				const itemJson = JSON.parse(item)
+				text += itemJson.choices[0].delta.content || ''
+				itemJson.text = text
+				return JSON.stringify(itemJson)
+			}).join('\n')
+			console.log('response', response)
+			return params.onDownloadProgress({
+				event: {
+					target: {
+						response: response,
+						responseText: response
+					}
+				}
+			})
+		},
   })
 }
 
