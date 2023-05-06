@@ -3,7 +3,7 @@ import type { ChatMessage, SendMessageOptions } from 'chatgpt'
 import type { Request } from 'express'
 import type { RequestOptions } from '../chatgpt/types'
 import { sendResponse } from '../utils'
-const timeoutMs: number = !isNaN(+process.env.TIMEOUT_MS) ? +process.env.TIMEOUT_MS : 30 * 1000
+const timeoutMs: number = !isNaN(+process.env.TIMEOUT_MS) ? +process.env.TIMEOUT_MS : 100 * 1000
 const ErrorCodeMessage: Record<string, string> = {
   401: '[OpenAI] 提供错误的API密钥 | Incorrect API key provided',
   403: '[OpenAI] 服务器拒绝访问，请稍后再试 | Server refused to access, please try again later',
