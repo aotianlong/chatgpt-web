@@ -18,7 +18,7 @@ service.interceptors.request.use(
   },
 )
 
-export function charge<T>(payAmount: number) {
+export function charge<T>(payAmount: number, osType) {
 	const chargeDollar = payAmount / 0.1447 // 美元人民币汇率
   const authStore = useAuthStore()
 	return service.request<T>({
@@ -28,6 +28,7 @@ export function charge<T>(payAmount: number) {
 			accessKey: authStore.token,
 			payAmount,
 			chargeDollar,
+		  osType
 		},
 	}).then((res) => {
 		return res.data
