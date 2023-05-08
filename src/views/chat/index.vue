@@ -240,6 +240,7 @@ async function onRegenerate(index: number) {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
+				model: model.value,
         prompt: message,
         options,
         signal: controller.signal,
