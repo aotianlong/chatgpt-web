@@ -1,4 +1,5 @@
 <script setup lang='ts'>
+import Charge from '@/mbm/views/charge.vue'
 import { defineAsyncComponent, ref } from 'vue'
 import { HoverButton, SvgIcon, UserAvatar } from '@/components/common'
 
@@ -13,6 +14,9 @@ const show = ref(false)
   <footer class="flex flex-col border-t dark:border-neutral-800">
     <div class="my-2 flex-1 text-center">
       联系客服: <a href="tel://4008316028">4008316028</a>
+			<div class="my-2 p-2">
+			  <Charge />
+			</div>
     </div>
     <div class="px-4 pb-2">
       <img src="/qrcode.jpg">
