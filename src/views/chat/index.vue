@@ -107,6 +107,11 @@ async function onConversation() {
   try {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
+			const messages = dataSources.value.map((item) => {
+				return {content: item.text, role: item.inversion ? 'user' : 'assistant'}
+			})
+			const partialMessages = messages.slice(-8)
+			console.log(partialMessages)
       await fetchChatAPIProcess<Chat.ConversationResponse>({
         model: model.value,
         prompt: message,
@@ -240,6 +245,7 @@ async function onRegenerate(index: number) {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
+				model: model.value,
         prompt: message,
         options,
         signal: controller.signal,
