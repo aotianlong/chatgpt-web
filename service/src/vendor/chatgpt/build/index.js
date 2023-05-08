@@ -252,7 +252,7 @@ Current date: ${currentDate}`;
                     const delta = response.choices[0].delta;
                     // mbm
                     const finishReason = response.choices[0].finish_reason;
-                    if (finishReason === "length" || finishReason === 'stop') {
+                    if (finishReason === "length" || finishReason === 'stop' || finishReason) {
                       result.text = result.text.trim();
                       return resolve(result);
                     }
