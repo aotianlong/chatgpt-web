@@ -16,7 +16,12 @@ sslogin({
 			return false
 		}
 	},
+	handleAccount(account) {
+		console.log('handle account', account)
+		return new Promise((resolve, reject) => {
 
+		})
+	}
 })
 
 const { theme, themeOverrides } = useTheme()

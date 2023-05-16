@@ -59,10 +59,10 @@ export function getAccount(token) {
 	const url = "https://openai.yingjin.pro/api/user/doGetInfo"
 	return fetch(url, {headers: { Authorization: token }, method: 'get'}).then((response) => {
 		console.log(response)
-		response.json().then((data) => {
+		return response.json().then((data) => {
 			console.log('getAccount', data)
-			if(data.code === 0) {
-				return data.data
+			if(data.code === 11000) {
+				return Promise.resolve(data.data)
 			} else {
 				return Promise.reject(data)
 			}
