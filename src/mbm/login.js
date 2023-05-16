@@ -4,9 +4,9 @@
  */
 
 export function getToken() {
-	if (/[^\w]token=([-_\.\w]+)/.test(window.location)) {
+	if (/[^\w]token=([-_\.\w]+)/.test(window.location.href)) {
 		const token = RegExp.$1
-		console.log('get token', token)
+		console.log('get token', token, window.location.href)
 		return token
 	} else {
 		return null
