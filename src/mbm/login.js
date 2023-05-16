@@ -57,7 +57,8 @@ export function sslogin(options = {}) {
 
 export function getAccount(token) {
 	const url = "https://openai.yingjin.pro/api/user/doGetInfo"
-	return fetch(url, {headers: { Authorization: token },body: JSON.stringify({ Authorization: token }), method: 'post'}).then((response) => {
+	return fetch(url, {headers: { Authorization: token }, method: 'get'}).then((response) => {
+		console.log(response)
 		response.json().then((data) => {
 			console.log('getAccount', data)
 			if(data.code === 0) {
