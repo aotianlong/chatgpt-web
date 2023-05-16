@@ -17,7 +17,7 @@ sslogin({
 			return false
 		}
 	},
-	handleAccount(account) {
+	handleAccount(account: any) {
 		console.log('handle account', account)
 		return new Promise((resolve, reject) => {
 			const authStore = useAuthStore()
