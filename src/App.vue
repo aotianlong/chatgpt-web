@@ -15,7 +15,8 @@ sslogin({
 		} else {
 			return false
 		}
-	}
+	},
+
 })
 
 const { theme, themeOverrides } = useTheme()
