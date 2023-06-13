@@ -14,6 +14,7 @@ import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
 import { fetchChatAPIProcess } from '@/api'
+import TokensNotice from '@/mbm/views/tokensNotice.vue'
 import { t } from '@/locales'
 
 let controller = new AbortController()
@@ -521,6 +522,9 @@ const modelOptions = [
     </main>
     <footer :class="footerClass">
       <div class="w-full max-w-screen-xl m-auto">
+
+				<div class="text-center"><TokensNotice :model="model" /></div>
+
         <div class="flex items-center justify-between space-x-2">
           <HoverButton @click="handleClear">
             <span class="text-xl text-[#4f555e] dark:text-white">
