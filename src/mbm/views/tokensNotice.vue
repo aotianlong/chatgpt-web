@@ -41,6 +41,16 @@ const props = defineProps({
 	}
 })
 
+/*
+const computeCost = (data) => {
+	api.post('/api/computeCost', data).then(() => {
+		console.log('computeCost success')
+	}).catch((err) => {
+		console.log('computeCost failed', err)
+	})
+}
+*/
+
 const completionTokens = computed(() => {
 	return props.completionText.length / 4
 })
