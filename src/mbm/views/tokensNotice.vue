@@ -1,5 +1,5 @@
 <template>
-	<div class="flex gap-2 justify-center">
+	<div class="flex gap-2 text-gray-400 text-sm">
 		<span v-if="completionTokens">
 			Completion 完成: {{ completionTokens }} tokens;
 		</span>
@@ -27,6 +27,15 @@ const promptPrice = {
 	'gpt-4-32k': 0.12,
 	'gpt-3.5-turbo': 0.004,
 }
+
+const model = computed(() => {
+	const mapping = {
+		"xy-openai-gpt4-32k": "gpt-4-32k",
+		"xy-openai-gpt4": "gpt-4",
+		"xy-openai-gpt35": "gpt-3.5-turbo",
+	}
+	return mapping[props.model] || props.model
+})
 
 const props = defineProps({
 	model: {
@@ -64,7 +73,7 @@ const propmtTokens = computed(() => {
 })
 
 const completionCost = computed(() => {
-	const price =completionPrice[props.model]
+	const price =completionPrice[model.value]
 	if (!props.completionText) {
 		return 0
 	}
@@ -72,7 +81,7 @@ const completionCost = computed(() => {
 })
 
 const promptCost = computed(() => {
-	const price = promptPrice[props.model]
+	const price = promptPrice[model.value]
 	if (!props.promptText) {
 		return 0
 	}
