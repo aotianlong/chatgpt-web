@@ -13,23 +13,25 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { encode } from 'gpt-tokenizer'
+
 
 const completionPrice = {
-	'GPT-4': 0.12,
-	'GPT-4-32K': 0.24,
-	'GPT-3.5-turbo': 0.004,
+	'gpt-4': 0.12,
+	'gpt-4-32k': 0.24,
+	'gpt-3.5-turbo': 0.004,
 }
 
 const promptPrice = {
-	'GPT-4': 0.06,
-	'GPT-4-32K': 0.12,
-	'GPT-3.5-turbo': 0.004,
+	'gpt-4': 0.06,
+	'gpt-4-32k': 0.12,
+	'gpt-3.5-turbo': 0.004,
 }
 
 const props = defineProps({
 	model: {
 		type: String,
-		default: 'GPT-4'
+		default: 'gpt-4'
 	},
 	promptText: {
 		type: String,
@@ -52,22 +54,32 @@ const computeCost = (data) => {
 */
 
 const completionTokens = computed(() => {
-	return props.completionText.length / 4
+	// return props.completionText.length / 4
+	return encode(props.completionText).length
 })
 
 const propmtTokens = computed(() => {
-	return props.promptText.length / 4
+	// return props.promptText.length / 4
+	return encode(props.promptText).length
 })
 
 const completionCost = computed(() => {
-	return completionPrice[props.model] * completionTokens.value
+	const price =completionPrice[props.model]
+	if (!props.completionText) {
+		return 0
+	}
+  return ((price * completionTokens.value) / 1000).toFixed(6)
 })
 
 const promptCost = computed(() => {
-	return promptPrice[props.model] * propmtTokens.value
+	const price = promptPrice[props.model]
+	if (!props.promptText) {
+		return 0
+	}
+	return ((price * propmtTokens.value) / 1000).toFixed(6)
 })
 
 const totalCost = computed(() => {
-	return completionCost.value + promptCost.value
+	return completionCost.value || promptCost.value
 })
 </script>
