@@ -40,7 +40,7 @@ const conversationList = computed(() => dataSources.value.filter(item => (!item.
 const prompt = ref<string>('')
 const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
-const model = ref<string>('xy-openai-gpt4-32k')
+const model = ref<string>('gpt-4-32k')
 
 // 添加PromptStore
 const promptStore = usePromptStore()
@@ -467,9 +467,9 @@ onUnmounted(() => {
 })
 
 const modelOptions = [
-  { label: 'gpt4', value: 'xy-openai-gpt4' },
-  { label: 'gpt4-32k', value: 'xy-openai-gpt4-32k' },
-  { label: 'gpt35', value: 'xy-openai-gpt35' },
+  { label: 'gpt4', value: 'gpt-4' },
+  { label: 'gpt4-32k', value: 'gpt-4-32k' },
+  { label: 'gpt35', value: 'gpt-3.5-turbo' },
 ]
 </script>
 
@@ -498,6 +498,7 @@ const modelOptions = [
             <div>
               <Message
                 v-for="(item, index) of dataSources"
+								:model="item.requestOptions?.model"
                 :key="index"
                 :date-time="item.dateTime"
                 :text="item.text"
@@ -523,7 +524,7 @@ const modelOptions = [
     <footer :class="footerClass">
       <div class="w-full max-w-screen-xl m-auto">
 
-				<div class="text-center"><TokensNotice :model="model" /></div>
+				<div class="text-center"><TokensNotice :model="model" :prompt-text="prompt" class="justify-center"/></div>
 
         <div class="flex items-center justify-between space-x-2">
           <HoverButton @click="handleClear">
