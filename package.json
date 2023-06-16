@@ -23,6 +23,7 @@
     "common:prepare": "husky install",
     "deploy": "rsync -avz dist/* app@mbmgpt.com:apps/musicgpt-chat/.",
     "deploy2": "rsync -avz dist/* app@mbmzone:apps/chat.mbmzone.com/.",
+    "deploy3": "rsync -avz dist/* ubuntu@chat.mbmzone.com:/data/apps/chat.mbmzone.com/.",
     "qrcode": "scp public/qrcode.jpg app@mbmzone:apps/chat.mbmzone.com/qrcode.jpg",
     "push": "git push app@mbmgpt.com:source/chatgpt-web"
   },
