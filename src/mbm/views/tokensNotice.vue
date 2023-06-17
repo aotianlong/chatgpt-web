@@ -14,7 +14,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { encode } from 'gpt-tokenizer'
+import { useSettingStore } from '@/store'
 
+
+const settingStore = useSettingStore()
 
 const completionPrice = {
 	'gpt-4': 0.12,
@@ -68,8 +71,9 @@ const completionTokens = computed(() => {
 })
 
 const propmtTokens = computed(() => {
-	// return props.promptText.length / 4
-	return encode(props.promptText).length
+	// console.log(settingStore.systemMessage)
+	const fullPrompt = settingStore.systemMessage + props.promptText
+	return encode(fullPrompt).length
 })
 
 const completionCost = computed(() => {
