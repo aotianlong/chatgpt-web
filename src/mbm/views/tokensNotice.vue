@@ -14,8 +14,18 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { encode } from 'gpt-tokenizer'
-import { useSettingStore } from '@/store'
+import { useSettingStore, useChatStore } from '@/store'
 
+
+const chatStore = useChatStore()
+const historyPrompt = computed(() => {
+  const uuid = chatStore.getChatHistoryByCurrentActive?.uuid
+	if (uuid) {
+	  return chatStore.getChatByUuid(uuid).map(i => i.text).join()
+	} else {
+		return ''
+	}
+})
 
 const settingStore = useSettingStore()
 
@@ -52,6 +62,10 @@ const props = defineProps({
 	completionText: {
 		type: String,
 		default: ''
+	},
+	usingContext: {
+		type: Boolean,
+		default: false
 	}
 })
 
@@ -72,7 +86,10 @@ const completionTokens = computed(() => {
 
 const propmtTokens = computed(() => {
 	// console.log(settingStore.systemMessage)
-	const fullPrompt = settingStore.systemMessage + props.promptText
+	let fullPrompt = settingStore.systemMessage + props.promptText
+	if (props.usingContext) {
+		fullPrompt += historyPrompt.value
+	}
 	return encode(fullPrompt).length
 })
 

@@ -524,7 +524,7 @@ const modelOptions = [
     <footer :class="footerClass">
       <div class="w-full max-w-screen-xl m-auto">
 
-				<div class="text-center"><TokensNotice :model="model" :prompt-text="prompt" class="justify-center"/></div>
+				<div class="text-center"><TokensNotice :model="model" :prompt-text="prompt" class="justify-center" :using-context="usingContext"/></div>
 
         <div class="flex items-center justify-between space-x-2">
           <HoverButton @click="handleClear">
