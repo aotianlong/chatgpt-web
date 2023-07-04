@@ -470,6 +470,7 @@ const modelOptions = [
   { label: 'gpt4', value: 'gpt-4' },
   { label: 'gpt4-32k', value: 'gpt-4-32k' },
   { label: 'gpt35', value: 'gpt-3.5-turbo' },
+  { label: 'gpt35-16k', value: 'xy-openai-gpt35-16k' },
 ]
 </script>
 
