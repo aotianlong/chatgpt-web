@@ -8,6 +8,7 @@ import { useIconRender } from '@/hooks/useIconRender'
 import { t } from '@/locales'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { copyToClip } from '@/utils/copy'
+import TokensNotice from '@/mbm/views/tokensNotice.vue'
 
 interface Props {
   dateTime?: string
@@ -15,6 +16,7 @@ interface Props {
   inversion?: boolean
   error?: boolean
   loading?: boolean
+	model?: string
 }
 
 interface Emit {
@@ -93,6 +95,7 @@ async function handleCopy() {
 </script>
 
 <template>
+<div>
   <div
     ref="messageRef"
     class="flex w-full mb-6 overflow-hidden"
@@ -142,4 +145,6 @@ async function handleCopy() {
       </div>
     </div>
   </div>
+	<TokensNotice :model="model" :completion-text="text" v-if="!inversion" class="justify-start mt-[-28px] mb-10 ml-12" />
+</div>
 </template>

@@ -15,7 +15,7 @@ const ErrorCodeMessage: Record<string, string> = {
 async function chatReplyProcess(options: RequestOptions) {
   const { accessKey, message, lastContext, process, systemMessage } = options
   let { model } = options
-  model ||= 'xy-openai-gpt4-32k'
+  model ||= 'gpt-4-32k'
   try {
     const options: SendMessageOptions = { timeoutMs }
 
