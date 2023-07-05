@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useAuthStore } from '@/store'
 
-const baseURL = 'https://openai.yingjin.pro'
+const baseURL = 'https://musicgpt.mbmzone.com'
 const service = axios.create({
   baseURL
 })
