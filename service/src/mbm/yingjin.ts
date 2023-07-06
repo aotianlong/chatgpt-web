@@ -22,7 +22,7 @@ async function chatReplyProcess(options: RequestOptions) {
     const headers = { 'Content-Type': 'application/json;charset=utf-8', 'accessKey': accessKey }
     global.console.log('headers', headers, 'model', model)
     const response = await axios.post(
-      'https://musicgpt.mbmzone.com/api/visitor/openai/chat',
+      'https://openai.yingjin.pro/api/visitor/openai/chat',
       {
         model,
         messages: [
@@ -116,7 +116,7 @@ async function chatReplyProcess(options: RequestOptions) {
 
 function sendPhoneCode(phone: string) {
   return axios.post(
-    'https://musicgpt.mbmzone.com/api/visitor/doSendCode',
+    'https://openai.yingjin.pro/api/visitor/doSendCode',
     {
       phone,
     },
@@ -131,7 +131,7 @@ function sendPhoneCode(phone: string) {
 
 function queryAccount(phone: string, code: string) {
   return axios.post(
-    'https://musicgpt.mbmzone.com/api/visitor/queryAccount',
+    'https://openai.yingjin.pro/api/visitor/queryAccount',
     {
       phone,
       code,
@@ -147,7 +147,7 @@ function queryAccount(phone: string, code: string) {
 
 function accountInfo(accessKey: string) {
   return axios.post(
-    'https://musicgpt.mbmzone.com/api/visitor/queryInfo',
+    'https://openai.yingjin.pro/api/visitor/queryInfo',
     {
       accessKey,
     },

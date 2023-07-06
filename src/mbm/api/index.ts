@@ -1,9 +1,9 @@
 import axios from 'axios'
 import { useAuthStore } from '@/store'
 
-const baseURL = 'https://musicgpt.mbmzone.com'
+const baseURL = 'https://openai.yingjin.pro'
 const service = axios.create({
-  baseURL
+  baseURL,
 })
 
 service.interceptors.request.use(
@@ -19,18 +19,18 @@ service.interceptors.request.use(
 )
 
 export function charge<T>(payAmount: number, osType: number) {
-	const chargeDollar = payAmount / 0.1447 // 美元人民币汇率
+  const chargeDollar = payAmount / 0.1447 // 美元人民币汇率
   const authStore = useAuthStore()
-	return service.request<T>({
-		method: 'post',
-		url: baseURL + '/api/wechatPay',
-		data: {
-			accessKey: authStore.token,
-			payAmount,
-			chargeDollar,
-		  osType
-		},
-	}).then((res) => {
-		return res.data
-	})
+  return service.request<T>({
+    method: 'post',
+    url: `${baseURL}/api/wechatPay`,
+    data: {
+      accessKey: authStore.token,
+      payAmount,
+      chargeDollar,
+		  osType,
+    },
+  }).then((res) => {
+    return res.data
+  })
 }

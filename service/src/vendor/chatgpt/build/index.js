@@ -103,7 +103,7 @@ var ChatGPTAPI = class {
   constructor(opts) {
     const {
       apiKey,
-      apiBaseUrl = "https://musicgpt.mbmzone.com",
+      apiBaseUrl = "https://openai.yingjin.pro",
       debug = false,
       messageStore,
       completionParams,
