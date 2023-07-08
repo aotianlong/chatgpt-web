@@ -4,17 +4,14 @@
 
 const modelNameKey = 'MBM_GPT_MODEL'
 
-function defaultCallback(model) {
-	localStorage.set(modelNameKey, model);
-	return Promise.resolve(model);
-}
-
-export function useModelByQuery(callback){
-  const model = new URLSearchParams(window.location.search).get('model')
+export function useModelByQuery(callback: any = null) {
+  const params = new URLSearchParams(window.location.search)
+  const model = params.get('model') || params.get('version')
   if (model) {
-   return defaultCallback(model).then((model) => {
-      if (callback)
-	      callback(model)
-      }
-  })
+    localStorage.setItem(modelNameKey, model)
+    return model
+  }
+  else {
+    return localStorage.getItem(modelNameKey)
+  }
 }
