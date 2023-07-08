@@ -40,7 +40,8 @@ const conversationList = computed(() => dataSources.value.filter(item => (!item.
 const prompt = ref<string>('')
 const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
-const model = ref<string>('gpt-4-32k')
+const model = ref<string>(route.query.model as string || undefined || 'gpt-4-32k')
+console.log('model', route.query)
 
 // 添加PromptStore
 const promptStore = usePromptStore()
@@ -241,7 +242,7 @@ async function onRegenerate(index: number) {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
-				model: model.value,
+        model: model.value,
         prompt: message,
         options,
         signal: controller.signal,
@@ -499,8 +500,8 @@ const modelOptions = [
             <div>
               <Message
                 v-for="(item, index) of dataSources"
-								:model="item.requestOptions?.model"
                 :key="index"
+                :model="item.requestOptions?.model"
                 :date-time="item.dateTime"
                 :text="item.text"
                 :inversion="item.inversion"
@@ -524,8 +525,9 @@ const modelOptions = [
     </main>
     <footer :class="footerClass">
       <div class="w-full max-w-screen-xl m-auto">
-
-				<div class="text-center"><TokensNotice :model="model" :prompt-text="prompt" class="justify-center"/></div>
+        <div class="text-center">
+          <TokensNotice :model="model" :prompt-text="prompt" class="justify-center" />
+        </div>
 
         <div class="flex items-center justify-between space-x-2">
           <HoverButton @click="handleClear">
