@@ -5,6 +5,7 @@ import { useTheme } from '@/hooks/useTheme'
 import { useLanguage } from '@/hooks/useLanguage'
 import { sslogin } from '@/mbm/login'
 import { useAuthStore, useUserStore } from '@/store'
+import { useModelByQuery } from '@/mbm/model'
 
 
 sslogin({

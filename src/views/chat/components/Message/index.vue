@@ -16,7 +16,8 @@ interface Props {
   inversion?: boolean
   error?: boolean
   loading?: boolean
-	model?: string
+  model?: string
+  showUsage?: boolean
 }
 
 interface Emit {
@@ -95,56 +96,56 @@ async function handleCopy() {
 </script>
 
 <template>
-<div>
-  <div
-    ref="messageRef"
-    class="flex w-full mb-6 overflow-hidden"
-    :class="[{ 'flex-row-reverse': inversion }]"
-  >
+  <div>
     <div
-      class="flex items-center justify-center flex-shrink-0 h-8 overflow-hidden rounded-full basis-8"
-      :class="[inversion ? 'ml-2' : 'mr-2']"
+      ref="messageRef"
+      class="flex w-full mb-6 overflow-hidden"
+      :class="[{ 'flex-row-reverse': inversion }]"
     >
-      <AvatarComponent :image="inversion" />
-    </div>
-    <div class="overflow-hidden text-sm " :class="[inversion ? 'items-end' : 'items-start']">
-      <p class="text-xs text-[#b4bbc4]" :class="[inversion ? 'text-right' : 'text-left']">
-        {{ dateTime }}
-      </p>
       <div
-        class="flex items-end gap-1 mt-2"
-        :class="[inversion ? 'flex-row-reverse' : 'flex-row']"
+        class="flex items-center justify-center flex-shrink-0 h-8 overflow-hidden rounded-full basis-8"
+        :class="[inversion ? 'ml-2' : 'mr-2']"
       >
-        <TextComponent
-          ref="textRef"
-          :inversion="inversion"
-          :error="error"
-          :text="text"
-          :loading="loading"
-          :as-raw-text="asRawText"
-        />
-        <div class="flex flex-col">
-          <button
-            v-if="!inversion"
-            class="mb-2 transition text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-300"
-            @click="handleRegenerate"
-          >
-            <SvgIcon icon="ri:restart-line" />
-          </button>
-          <NDropdown
-            :trigger="isMobile ? 'click' : 'hover'"
-            :placement="!inversion ? 'right' : 'left'"
-            :options="options"
-            @select="handleSelect"
-          >
-            <button class="transition text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-200">
-              <SvgIcon icon="ri:more-2-fill" />
+        <AvatarComponent :image="inversion" />
+      </div>
+      <div class="overflow-hidden text-sm " :class="[inversion ? 'items-end' : 'items-start']">
+        <p class="text-xs text-[#b4bbc4]" :class="[inversion ? 'text-right' : 'text-left']">
+          {{ dateTime }}
+        </p>
+        <div
+          class="flex items-end gap-1 mt-2"
+          :class="[inversion ? 'flex-row-reverse' : 'flex-row']"
+        >
+          <TextComponent
+            ref="textRef"
+            :inversion="inversion"
+            :error="error"
+            :text="text"
+            :loading="loading"
+            :as-raw-text="asRawText"
+          />
+          <div class="flex flex-col">
+            <button
+              v-if="!inversion"
+              class="mb-2 transition text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-300"
+              @click="handleRegenerate"
+            >
+              <SvgIcon icon="ri:restart-line" />
             </button>
-          </NDropdown>
+            <NDropdown
+              :trigger="isMobile ? 'click' : 'hover'"
+              :placement="!inversion ? 'right' : 'left'"
+              :options="options"
+              @select="handleSelect"
+            >
+              <button class="transition text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-200">
+                <SvgIcon icon="ri:more-2-fill" />
+              </button>
+            </NDropdown>
+          </div>
         </div>
       </div>
     </div>
+    <TokensNotice v-if="showUsage && !inversion" :model="model" :completion-text="text" class="justify-start mt-[-28px] mb-10 ml-12" />
   </div>
-	<TokensNotice :model="model" :completion-text="text" v-if="!inversion" class="justify-start mt-[-28px] mb-10 ml-12" />
-</div>
 </template>

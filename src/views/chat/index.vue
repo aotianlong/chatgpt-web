@@ -16,6 +16,8 @@ import { useChatStore, usePromptStore } from '@/store'
 import { fetchChatAPIProcess } from '@/api'
 import TokensNotice from '@/mbm/views/tokensNotice.vue'
 import { t } from '@/locales'
+import { useModelByQuery } from '@/mbm/model'
+import { useCardMember } from '@/mbm/card-member'
 
 let controller = new AbortController()
 
@@ -40,7 +42,8 @@ const conversationList = computed(() => dataSources.value.filter(item => (!item.
 const prompt = ref<string>('')
 const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
-const model = ref<string>('gpt-4-32k')
+const model = ref<string>(useModelByQuery() || 'gpt-4-32k')
+const isCardMember = useCardMember()
 
 // 添加PromptStore
 const promptStore = usePromptStore()
@@ -241,7 +244,7 @@ async function onRegenerate(index: number) {
     let lastText = ''
     const fetchChatAPIOnce = async () => {
       await fetchChatAPIProcess<Chat.ConversationResponse>({
-				model: model.value,
+        model: model.value,
         prompt: message,
         options,
         signal: controller.signal,
@@ -466,11 +469,22 @@ onUnmounted(() => {
     controller.abort()
 })
 
-const modelOptions = [
+let modelOptions = [
   { label: 'gpt4', value: 'gpt-4' },
   { label: 'gpt4-32k', value: 'gpt-4-32k' },
   { label: 'gpt35', value: 'gpt-3.5-turbo' },
+  { label: 'gpt35-16k', value: 'xy-openai-gpt35-16k' },
 ]
+
+if (isCardMember) {
+  modelOptions = [
+    {
+      label: 'GPT-周卡',
+      value: 'gpt-3.5-turbo',
+    },
+  ]
+  model.value = 'gpt-3.5-turbo'
+}
 </script>
 
 <template>
@@ -498,13 +512,14 @@ const modelOptions = [
             <div>
               <Message
                 v-for="(item, index) of dataSources"
-								:model="item.requestOptions?.model"
                 :key="index"
+                :model="item.requestOptions?.model"
                 :date-time="item.dateTime"
                 :text="item.text"
                 :inversion="item.inversion"
                 :error="item.error"
                 :loading="item.loading"
+                :show-usage="!isCardMember"
                 @regenerate="onRegenerate(index)"
                 @delete="handleDelete(index)"
               />
@@ -524,7 +539,9 @@ const modelOptions = [
     <footer :class="footerClass">
       <div class="w-full max-w-screen-xl m-auto">
 
-				<div class="text-center"><TokensNotice :model="model" :prompt-text="prompt" class="justify-center" :using-context="usingContext"/></div>
+        <div v-if="!isCardMember" class="text-center">
+          <TokensNotice :model="model" :prompt-text="prompt" class="justify-center" :using-context="usingContext" />
+        </div>
 
         <div class="flex items-center justify-between space-x-2">
           <HoverButton @click="handleClear">

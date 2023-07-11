@@ -4,7 +4,6 @@ import { setupI18n } from './locales'
 import { setupAssets, setupScrollbarStyle } from './plugins'
 import { setupStore } from './store'
 import { setupRouter } from './router'
-import './mbm'
 
 async function bootstrap() {
   const app = createApp(App)
