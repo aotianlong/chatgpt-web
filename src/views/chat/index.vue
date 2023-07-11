@@ -519,6 +519,7 @@ if (isCardMember) {
                 :inversion="item.inversion"
                 :error="item.error"
                 :loading="item.loading"
+                :show-usage="!isCardMember"
                 @regenerate="onRegenerate(index)"
                 @delete="handleDelete(index)"
               />
@@ -537,7 +538,7 @@ if (isCardMember) {
     </main>
     <footer :class="footerClass">
       <div class="w-full max-w-screen-xl m-auto">
-        <div class="text-center">
+        <div v-if="!isCardMember" class="text-center">
           <TokensNotice :model="model" :prompt-text="prompt" class="justify-center" />
         </div>
 
