@@ -34,3 +34,5 @@ export function charge<T>(payAmount: number, osType: number) {
     return res.data
   })
 }
+
+export default service
