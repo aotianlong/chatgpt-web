@@ -17,12 +17,13 @@ import { fetchChatAPIProcess } from '@/api'
 import TokensNotice from '@/mbm/views/tokensNotice.vue'
 import { t } from '@/locales'
 import { useModelByQuery } from '@/mbm/model'
-import { useCardMember } from '@/mbm/card-member'
+import { isCardMember as isCardMemberAPI } from '@/mbm/card-member'
 
 let controller = new AbortController()
 
 const openLongReply = import.meta.env.VITE_GLOB_OPEN_LONG_REPLY === 'true'
 
+const isCardMember = ref(false)
 const route = useRoute()
 const dialog = useDialog()
 const ms = useMessage()
@@ -43,7 +44,6 @@ const prompt = ref<string>('')
 const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
 const model = ref<string>(useModelByQuery() || 'gpt-4-32k')
-const isCardMember = useCardMember()
 
 // 添加PromptStore
 const promptStore = usePromptStore()
@@ -55,6 +55,17 @@ const { promptList: promptTemplate } = storeToRefs<any>(promptStore)
 dataSources.value.forEach((item, index) => {
   if (item.loading)
     updateChatSome(+uuid, index, { loading: false })
+})
+
+isCardMemberAPI().then((res) => {
+  isCardMember.value = res
+  if (res) {
+    console.log('set model to')
+    model.value = 'gpt-3.5-turbo'
+  }
+  else {
+    console.log('use is not card member')
+  }
 })
 
 function handleSubmit() {
@@ -469,22 +480,23 @@ onUnmounted(() => {
     controller.abort()
 })
 
-let modelOptions = [
-  { label: 'gpt4', value: 'gpt-4' },
-  { label: 'gpt4-32k', value: 'gpt-4-32k' },
-  { label: 'gpt35', value: 'gpt-3.5-turbo' },
-  { label: 'gpt35-16k', value: 'xy-openai-gpt35-16k' },
-]
-
-if (isCardMember) {
-  modelOptions = [
+const modelOptions = computed(() => {
+  const cardMemberModels = [
     {
       label: 'GPT-周卡',
       value: 'gpt-3.5-turbo',
     },
   ]
-  model.value = 'gpt-3.5-turbo'
-}
+
+  const models = [
+    { label: 'gpt4', value: 'gpt-4' },
+    { label: 'gpt4-32k', value: 'gpt-4-32k' },
+    { label: 'gpt35', value: 'gpt-3.5-turbo' },
+    { label: 'gpt35-16k', value: 'xy-openai-gpt35-16k' },
+  ]
+
+  return isCardMember.value ? cardMemberModels : models
+})
 </script>
 
 <template>
@@ -538,7 +550,6 @@ if (isCardMember) {
     </main>
     <footer :class="footerClass">
       <div class="w-full max-w-screen-xl m-auto">
-
         <div v-if="!isCardMember" class="text-center">
           <TokensNotice :model="model" :prompt-text="prompt" class="justify-center" :using-context="usingContext" />
         </div>
