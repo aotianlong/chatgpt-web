@@ -10,6 +10,9 @@ export async function getMemberCards() {
   const authStore = useAuthStore()
   const accessKey = authStore.token
   // 先获取账户信息
+  if (!accessKey) {
+    return false
+  }
   const response = await axios.post('https://openai.yingjin.pro/api/visitor/queryInfo', {
     accessKey,
   })
