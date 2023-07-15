@@ -28,6 +28,8 @@ sslogin({
 				name: account.name,
 				description: account.mobile,
 			})
+			// 周卡用户需要重新判断
+			location.reload()
 		})
 	}
 })
