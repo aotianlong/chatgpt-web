@@ -43,7 +43,8 @@ const conversationList = computed(() => dataSources.value.filter(item => (!item.
 const prompt = ref<string>('')
 const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
-const model = ref<string>(useModelByQuery() || 'gpt-4-32k')
+// const model = ref<string>(useModelByQuery() || 'gpt-4-32k')
+const model = ref<string>('gpt-4-32k')
 
 // 添加PromptStore
 const promptStore = usePromptStore()
