@@ -16,7 +16,6 @@ import { useChatStore, usePromptStore } from '@/store'
 import { fetchChatAPIProcess } from '@/api'
 import TokensNotice from '@/mbm/views/tokensNotice.vue'
 import { t } from '@/locales'
-import { useModelByQuery } from '@/mbm/model'
 import { isCardMember as isCardMemberAPI } from '@/mbm/card-member'
 
 let controller = new AbortController()
@@ -61,7 +60,7 @@ dataSources.value.forEach((item, index) => {
 isCardMemberAPI().then((res) => {
   isCardMember.value = res
   if (res) {
-    console.log('set model to')
+    console.log('set model to 周卡')
     model.value = 'gpt-3.5-turbo'
   }
   else {
@@ -496,7 +495,10 @@ const modelOptions = computed(() => {
     { label: 'gpt35-16k', value: 'xy-openai-gpt35-16k' },
   ]
 
-  return isCardMember.value ? cardMemberModels : models
+  if (isCardMember.value)
+    models.unshift({ label: 'gpt-周卡', value: 'gpt-3.5-turboo' })
+
+  return models
 })
 </script>
 
