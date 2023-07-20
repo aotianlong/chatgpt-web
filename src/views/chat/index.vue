@@ -496,7 +496,7 @@ const modelOptions = computed(() => {
   ]
 
   if (isCardMember.value)
-    models.unshift({ label: 'gpt-周卡', value: 'gpt-3.5-turboo' })
+    models.unshift({ label: 'gpt-周卡', value: 'gpt-3.5-turbo' })
 
   return models
 })
