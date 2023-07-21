@@ -495,8 +495,14 @@ const modelOptions = computed(() => {
     { label: 'gpt35-16k', value: 'xy-openai-gpt35-16k' },
   ]
 
-  if (isCardMember.value)
+  if (isCardMember.value) {
+    // 找到label为gpt35的条目，删除他
+    const index = models.findIndex(item => item.label === 'gpt35')
+    if (index !== -1)
+      models.splice(index, 1)
+
     models.unshift({ label: 'gpt-周卡', value: 'gpt-3.5-turbo' })
+  }
 
   return models
 })
@@ -553,8 +559,14 @@ const modelOptions = computed(() => {
     </main>
     <footer :class="footerClass">
       <div class="w-full max-w-screen-xl m-auto">
-        <div v-if="!isCardMember" class="text-center">
-          <TokensNotice :model="model" :prompt-text="prompt" class="justify-center" :using-context="usingContext" />
+        <div class="text-center">
+          <TokensNotice
+            :model="model"
+            :prompt-text="prompt"
+            class="justify-center"
+            :using-context="usingContext"
+            :is-card-member="isCardMember"
+          />
         </div>
 
         <div class="flex items-center justify-between space-x-2">

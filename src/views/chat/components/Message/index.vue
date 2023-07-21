@@ -9,6 +9,7 @@ import { t } from '@/locales'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { copyToClip } from '@/utils/copy'
 import TokensNotice from '@/mbm/views/tokensNotice.vue'
+import { isCardMember } from '@/mbm/card-member'
 
 interface Props {
   dateTime?: string
@@ -28,6 +29,11 @@ interface Emit {
 const props = defineProps<Props>()
 
 const emit = defineEmits<Emit>()
+
+const isCardMemberVar = ref(false)
+isCardMember().then((v) => {
+  isCardMemberVar.value = v
+})
 
 const { isMobile } = useBasicLayout()
 
@@ -146,6 +152,6 @@ async function handleCopy() {
         </div>
       </div>
     </div>
-    <TokensNotice v-if="showUsage && !inversion" :model="model" :completion-text="text" class="justify-start mt-[-28px] mb-10 ml-12" />
+    <TokensNotice v-if="!inversion" :model="model" :completion-text="text" class="justify-start mt-[-28px] mb-10 ml-12" :is-card-member="isCardMemberVar" />
   </div>
 </template>

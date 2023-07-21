@@ -5,14 +5,15 @@ import { useAuthStore } from '@/store'
  */
 
 const modelNameKey = 'MBM_CARD_MEMBER'
+let isCardMemberCache
 
 export async function getMemberCards() {
   const authStore = useAuthStore()
   const accessKey = authStore.token
   // 先获取账户信息
-  if (!accessKey) {
+  if (!accessKey)
     return false
-  }
+
   const response = await axios.post('https://openai.yingjin.pro/api/visitor/queryInfo', {
     accessKey,
   })
@@ -36,19 +37,26 @@ export async function getMemberCards() {
 }
 
 export async function isCardMember() {
+  if (isCardMemberCache !== undefined)
+	  return isCardMemberCache
+
   const cards = await getMemberCards()
   if (cards) {
     // 对比时间
     const validCard = cards.find((card: any) => {
       return (new Date(card.validityTime).getTime() > new Date().getTime())
     })
-    if (validCard)
+    if (validCard) {
+      isCardMemberCache = true
       return true
-
-    else
+    }
+    else {
+      isCardMemberCache = false
       return false
+    }
   }
   else {
+    isCardMemberCache = false
     return false
   }
 }
