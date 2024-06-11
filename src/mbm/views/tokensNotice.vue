@@ -41,6 +41,7 @@ const settingStore = useSettingStore()
 
 const completionPrice = {
   'gpt-4': 0.12,
+  'gpt-4o': 0.12,
   'gpt-4-32k': 0.24,
   'gpt-3.5-turbo': 0.004,
   'gpt-3.5-turbo-16k': 0.004,
@@ -49,6 +50,7 @@ const completionPrice = {
 
 const promptPrice = {
   'gpt-4': 0.06,
+  'gpt-4o': 0.06,
   'gpt-4-32k': 0.12,
   'gpt-3.5-turbo': 0.004,
   'gpt-3.5-turbo-16k': 0.004,
@@ -59,6 +61,7 @@ const model = computed(() => {
   const mapping = {
     'xy-openai-gpt4-32k': 'gpt-4-32k',
     'xy-openai-gpt4': 'gpt-4',
+    'xy-openai-gpt4o': 'gpt-4o',
     'xy-openai-gpt35': 'gpt-3.5-turbo',
     'xy-openai-gpt35-16k': 'gpt-3.5-turbo-16k',
   }
